@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Leaf, Eye, EyeOff, Lock, Mail, AlertCircle, ArrowRight } from 'lucide-react';
-import { useAuth, DEMO_ACCOUNTS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
+import { DEMO_ACCOUNTS } from '../constants/demoAccounts';
 
 export default function LoginPage() {
   const { login, quickLogin } = useAuth();
