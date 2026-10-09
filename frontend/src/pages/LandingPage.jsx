@@ -13,7 +13,8 @@ import {
   CheckCircle, 
   Laptop, 
   Smartphone, 
-  Leaf 
+  Leaf,
+  Search
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -38,7 +39,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="text-lg text-[#64748B] max-w-xl leading-relaxed">
-                A smart and transparent way to track electronic waste from collection to recycling using tamper-proof QR codes.
+                A smart and transparent way to track electronic waste from collection to recycling using QR codes.
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -49,47 +50,30 @@ export default function LandingPage() {
                   Get Started
                   <ArrowRight size={18} />
                 </Link>
-                <a
-                  href="#how-it-works"
-                  className="px-6 py-3 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-medium text-base transition-all"
+                <Link
+                  to="/track"
+                  className="px-6 py-3 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-medium text-base transition-all flex items-center gap-2"
                 >
-                  Learn More
-                </a>
+                  <Search size={18} className="text-[#166534]" />
+                  Track
+                </Link>
               </div>
             </div>
 
-            {/* Right Visual Image (matching mockup globe + electronics) */}
+            {/* Right Visual Image (High-Tech E-Waste Circular Economy Visual) */}
             <div className="relative flex items-center justify-center">
-              <div className="relative w-full max-w-lg aspect-4/3 rounded-2xl bg-gradient-to-tr from-emerald-100 via-teal-50 to-slate-100 p-8 flex items-center justify-center border border-[#E2E8F0] shadow-sm overflow-hidden">
-                {/* Background decorative glow */}
-                <div className="absolute w-72 h-72 rounded-full bg-emerald-200/50 blur-2xl -top-10 -right-10 pointer-events-none" />
-
-                {/* Central circular globe with recycling emblem */}
-                <div className="relative flex flex-col items-center justify-center z-10 text-center">
-                  <div className="w-44 h-44 rounded-full bg-gradient-to-b from-[#166534] to-[#15803d] flex items-center justify-center text-white shadow-lg p-3 ring-8 ring-emerald-50">
-                    <div className="flex flex-col items-center justify-center">
-                      <Recycle size={64} className="stroke-[2] text-white animate-pulse" />
-                      <span className="text-xs font-bold uppercase tracking-widest text-emerald-100 mt-2">
-                        Closed-Loop
-                      </span>
-                    </div>
+              <div className="relative w-full max-w-lg aspect-4/3 rounded-2xl bg-white p-2.5 flex items-center justify-center border border-[#E2E8F0] shadow-lg overflow-hidden group">
+                <img
+                  src="/images/hero-visual.jpg"
+                  alt="EcoTrack E-Waste Circular Economy Platform"
+                  className="w-full h-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-2 bg-slate-900/80 backdrop-blur-md px-3.5 py-2 rounded-xl text-white text-xs border border-white/20">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="font-semibold">Live Traceability Active</span>
                   </div>
-
-                  {/* Floating Devices Cards */}
-                  <div className="flex items-center gap-3 mt-6">
-                    <div className="bg-white/95 backdrop-blur-xs px-3.5 py-2 rounded-lg border border-slate-200 shadow-xs flex items-center gap-2">
-                      <Laptop size={16} className="text-[#166534]" />
-                      <span className="text-xs font-semibold text-slate-800">Laptops</span>
-                    </div>
-                    <div className="bg-white/95 backdrop-blur-xs px-3.5 py-2 rounded-lg border border-slate-200 shadow-xs flex items-center gap-2">
-                      <Smartphone size={16} className="text-[#166534]" />
-                      <span className="text-xs font-semibold text-slate-800">Mobiles</span>
-                    </div>
-                    <div className="bg-white/95 backdrop-blur-xs px-3.5 py-2 rounded-lg border border-slate-200 shadow-xs flex items-center gap-2">
-                      <QrCode size={16} className="text-[#166534]" />
-                      <span className="text-xs font-semibold text-slate-800">QR Trace</span>
-                    </div>
-                  </div>
+                  <span className="text-[11px] text-emerald-300 font-mono font-medium">QR Powered</span>
                 </div>
               </div>
             </div>
@@ -102,8 +86,8 @@ export default function LandingPage() {
                 <Package size={24} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-[#0F172A] tracking-tight">10K+</div>
-                <div className="text-xs text-[#64748B] font-medium">Items Tracked</div>
+                <div className="text-lg font-bold text-[#0F172A] tracking-tight">Unique IDs</div>
+                <div className="text-xs text-[#64748B] font-medium">Per registered item</div>
               </div>
             </div>
 
@@ -112,8 +96,8 @@ export default function LandingPage() {
                 <Building2 size={24} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-[#0F172A] tracking-tight">500+</div>
-                <div className="text-xs text-[#64748B] font-medium">Collection Centers</div>
+                <div className="text-lg font-bold text-[#0F172A] tracking-tight">QR Access</div>
+                <div className="text-xs text-[#64748B] font-medium">Quick public tracking</div>
               </div>
             </div>
 
@@ -122,8 +106,8 @@ export default function LandingPage() {
                 <Users2 size={24} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-[#0F172A] tracking-tight">100+</div>
-                <div className="text-xs text-[#64748B] font-medium">Partner Organizations</div>
+                <div className="text-lg font-bold text-[#0F172A] tracking-tight">Lifecycle</div>
+                <div className="text-xs text-[#64748B] font-medium">Recorded status history</div>
               </div>
             </div>
 
@@ -132,8 +116,8 @@ export default function LandingPage() {
                 <Recycle size={24} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-[#0F172A] tracking-tight">50 Tons+</div>
-                <div className="text-xs text-[#64748B] font-medium">E-Waste Recycled</div>
+                <div className="text-lg font-bold text-[#0F172A] tracking-tight">Two Paths</div>
+                <div className="text-xs text-[#64748B] font-medium">Refurbish or recycle</div>
               </div>
             </div>
           </div>
@@ -149,34 +133,61 @@ export default function LandingPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 text-left">
-            <div className="p-6 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
-              <div className="w-10 h-10 rounded-lg bg-[#166534] text-white flex items-center justify-center font-bold mb-4">
-                1
+            <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] overflow-hidden shadow-xs hover:shadow-md transition-shadow">
+              <div className="h-48 overflow-hidden bg-slate-100">
+                <img
+                  src="/images/step1-register.jpg"
+                  alt="Register and tag e-waste device"
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
               </div>
-              <h3 className="text-lg font-bold text-[#0F172A]">Register & Tag</h3>
-              <p className="text-sm text-[#64748B] mt-2">
-                Declare your old laptops, phones, or appliances and generate a unique QR code sticker.
-              </p>
+              <div className="p-6">
+                <div className="w-9 h-9 rounded-lg bg-[#166534] text-white flex items-center justify-center font-bold text-sm mb-3">
+                  1
+                </div>
+                <h3 className="text-lg font-bold text-[#0F172A]">Register & Tag</h3>
+                <p className="text-sm text-[#64748B] mt-2 leading-relaxed">
+                  Declare your old laptops, phones, or appliances and generate a unique QR code sticker for physical custody.
+                </p>
+              </div>
             </div>
 
-            <div className="p-6 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
-              <div className="w-10 h-10 rounded-lg bg-[#166534] text-white flex items-center justify-center font-bold mb-4">
-                2
+            <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] overflow-hidden shadow-xs hover:shadow-md transition-shadow">
+              <div className="h-48 overflow-hidden bg-slate-100">
+                <img
+                  src="/images/step2-transit.jpg"
+                  alt="Track custody with logistics scanning"
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
               </div>
-              <h3 className="text-lg font-bold text-[#0F172A]">Track Custody</h3>
-              <p className="text-sm text-[#64748B] mt-2">
-                Collection centers and transporters scan the QR code to verify physical handoffs at every checkpoint.
-              </p>
+              <div className="p-6">
+                <div className="w-9 h-9 rounded-lg bg-[#166534] text-white flex items-center justify-center font-bold text-sm mb-3">
+                  2
+                </div>
+                <h3 className="text-lg font-bold text-[#0F172A]">Track Custody</h3>
+                <p className="text-sm text-[#64748B] mt-2 leading-relaxed">
+                  Collection centers and transporters scan the QR code to verify physical handoffs at every checkpoint.
+                </p>
+              </div>
             </div>
 
-            <div className="p-6 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC]">
-              <div className="w-10 h-10 rounded-lg bg-[#166534] text-white flex items-center justify-center font-bold mb-4">
-                3
+            <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] overflow-hidden shadow-xs hover:shadow-md transition-shadow">
+              <div className="h-48 overflow-hidden bg-slate-100">
+                <img
+                  src="/images/step3-recycling.jpg"
+                  alt="Certified sustainable recycling laboratory"
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
               </div>
-              <h3 className="text-lg font-bold text-[#0F172A]">Certified Recycling</h3>
-              <p className="text-sm text-[#64748B] mt-2">
-                Technicians inspect and route equipment for certified refurbishment or closed-loop material reclamation.
-              </p>
+              <div className="p-6">
+                <div className="w-9 h-9 rounded-lg bg-[#166534] text-white flex items-center justify-center font-bold text-sm mb-3">
+                  3
+                </div>
+                <h3 className="text-lg font-bold text-[#0F172A]">Certified Recycling</h3>
+                <p className="text-sm text-[#64748B] mt-2 leading-relaxed">
+                  Technicians inspect and route equipment for certified refurbishment or closed-loop material reclamation.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -236,7 +247,6 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-6 text-xs text-slate-400">
-            <Link to="/track" className="hover:text-white transition-colors">Public Tracker</Link>
             <Link to="/login" className="hover:text-white transition-colors">Login</Link>
             <Link to="/signup" className="hover:text-white transition-colors">Sign Up</Link>
           </div>

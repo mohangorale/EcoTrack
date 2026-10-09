@@ -8,12 +8,9 @@ import {
   Search, 
   User, 
   LogOut, 
-  RefreshCw, 
-  ClipboardCheck, 
+  QrCode,
   Users, 
-  FileText, 
   Settings, 
-  Layers 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -29,28 +26,24 @@ export default function DashboardSidebar({ isMobileOpen, onCloseMobile }) {
   const role = user?.role || 'CUSTOMER';
 
   const customerNav = [
-    { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
+    { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard, end: true },
     { name: 'Register E-Waste', to: '/register-waste', icon: PlusCircle },
-    { name: 'My Items', to: '/dashboard', icon: Package },
-    { name: 'Track Item', to: '/track', icon: Search },
+    { name: 'Track Item', to: '/dashboard/track', icon: Search },
     { name: 'Profile', to: '/profile', icon: User },
   ];
 
   const stakeholderNav = [
-    { name: 'Dashboard', to: '/stakeholder', icon: LayoutDashboard },
-    { name: 'Received Items', to: '/stakeholder', icon: Package },
-    { name: 'Inspection', to: '/inspection/EW00120', icon: ClipboardCheck },
-    { name: 'Update Status', to: '/update-status/EW00123', icon: RefreshCw },
-    { name: 'Reports', to: '/stakeholder', icon: FileText },
+    { name: 'Dashboard', to: '/stakeholder', icon: LayoutDashboard, end: true },
+    { name: 'QR Scanner', to: '/scanner', icon: QrCode },
+    { name: 'Processing Queue', to: '/stakeholder', icon: Package, end: true },
     { name: 'Profile', to: '/profile', icon: User },
   ];
 
   const adminNav = [
-    { name: 'Dashboard', to: '/admin', icon: LayoutDashboard },
+    { name: 'Dashboard', to: '/admin', icon: LayoutDashboard, end: true },
     { name: 'Users', to: '/admin/users', icon: Users },
-    { name: 'Items', to: '/admin', icon: Package },
-    { name: 'Reports', to: '/admin', icon: FileText },
-    { name: 'Settings', to: '/profile', icon: Settings },
+    { name: 'QR Scanner', to: '/scanner', icon: QrCode },
+    { name: 'Profile', to: '/profile', icon: Settings },
   ];
 
   const navItems = role === 'ADMIN' ? adminNav : role === 'CUSTOMER' ? customerNav : stakeholderNav;
@@ -76,6 +69,7 @@ export default function DashboardSidebar({ isMobileOpen, onCloseMobile }) {
             <NavLink
               key={item.name}
               to={item.to}
+              end={Boolean(item.end)}
               onClick={onCloseMobile}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${

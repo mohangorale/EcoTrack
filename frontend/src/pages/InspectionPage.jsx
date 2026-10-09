@@ -12,7 +12,7 @@ export default function InspectionPage() {
   const [loading, setLoading] = useState(true);
   const [condition, setCondition] = useState('Scrap');
   const [decision, setDecision] = useState('SEND_FOR_RECYCLING');
-  const [notes, setNotes] = useState('Device is not economically repairable. Route for material extraction.');
+  const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -20,7 +20,8 @@ export default function InspectionPage() {
   useEffect(() => {
     async function fetchItem() {
       try {
-        const res = await api.getItemDetails(itemId || 'EW00120');
+        if (!itemId) throw new Error('Choose an item from the stakeholder dashboard first.');
+        const res = await api.getItemDetails(itemId);
         setItem(res.data.item);
       } catch (err) {
         setError('Failed to load item for inspection.');
@@ -53,9 +54,9 @@ export default function InspectionPage() {
     }
   };
 
-  const displayId = item?.itemId || itemId || 'EW00120';
-  const displayName = item?.deviceName || 'Printer';
-  const displayBrand = item?.brand || 'HP';
+  const displayId = item?.itemId || itemId || '';
+  const displayName = item?.deviceName || '—';
+  const displayBrand = item?.brand || 'Not provided';
 
   return (
     <AppLayout
@@ -168,7 +169,7 @@ export default function InspectionPage() {
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || loading || !item}
                 className="w-full py-2.5 px-4 rounded-lg bg-[#166534] hover:bg-[#14532D] text-white font-medium text-sm shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {submitting ? (

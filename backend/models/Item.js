@@ -50,6 +50,19 @@ const itemSchema = new mongoose.Schema(
       maxlength: 1000,
       default: ''
     },
+    brand: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    weight: {
+      type: Number,
+      default: 1.0
+    },
+    photoUrl: {
+      type: String,
+      default: ''
+    },
     currentStatus: {
       type: String,
       required: true,

@@ -7,7 +7,17 @@ const { isValidTransition, isRoleAuthorizedForStatus } = require('../utils/state
 // POST /api/items - Customer registers e-waste
 router.post('/', verifyToken, authorizeRoles('CUSTOMER', 'ADMIN'), (req, res) => {
   try {
-    const { deviceName, category, condition, quantity, pickupLocation, description } = req.body;
+    const {
+      deviceName,
+      category,
+      condition,
+      quantity,
+      pickupLocation,
+      description,
+      brand,
+      weight,
+      photoUrl
+    } = req.body;
 
     if (!deviceName || !pickupLocation) {
       return res.status(400).json({
@@ -20,14 +30,14 @@ router.post('/', verifyToken, authorizeRoles('CUSTOMER', 'ADMIN'), (req, res) =>
     const item = store.createItem(
       {
         deviceName,
-        brand: req.body.brand || '',
-        category: category || 'Computers',
-        condition: condition || 'Used',
-        weight: req.body.weight || '1.0',
+        category: category || 'OTHER',
+        condition: condition || 'NON_WORKING',
         quantity: quantity || 1,
         pickupLocation,
         description: description || '',
-        photoUrl: req.body.photoUrl || ''
+        brand: brand || '',
+        weight: weight || '',
+        photoUrl: photoUrl || ''
       },
       req.user.id
     );
@@ -36,7 +46,20 @@ router.post('/', verifyToken, authorizeRoles('CUSTOMER', 'ADMIN'), (req, res) =>
       success: true,
       message: 'Item registered successfully',
       data: {
-        item,
+        item: {
+          itemId: item.itemId,
+          deviceName: item.deviceName,
+          brand: item.brand,
+          category: item.category,
+          condition: item.condition,
+          weight: item.weight,
+          pickupLocation: item.pickupLocation,
+          description: item.description,
+          currentStatus: item.currentStatus,
+          photoUrl: item.photoUrl,
+          qrCodeUrl: item.qrCodeUrl,
+          createdAt: item.createdAt
+        },
         trackingUrl: item.qrCodeUrl
       }
     });
@@ -103,11 +126,14 @@ router.get('/my', verifyToken, (req, res) => {
         items: items.map(item => ({
           itemId: item.itemId,
           deviceName: item.deviceName,
+          brand: item.brand,
           category: item.category,
           condition: item.condition,
+          weight: item.weight,
           pickupLocation: item.pickupLocation,
           currentStatus: item.currentStatus,
           qrCodeUrl: item.qrCodeUrl,
+          photoUrl: item.photoUrl,
           createdAt: item.createdAt,
           lastUpdatedAt: item.lastUpdatedAt
         })),

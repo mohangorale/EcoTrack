@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PublicNavbar from '../components/PublicNavbar';
 import StatusBadge from '../components/StatusBadge';
@@ -8,23 +8,20 @@ import { api } from '../services/api';
 
 export default function PublicTrackingSearch() {
   const navigate = useNavigate();
-  const [searchId, setSearchId] = useState('EW00123');
+  const [searchId, setSearchId] = useState('');
   const [item, setItem] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const sampleIds = ['EW00123', 'EW00122', 'EW00121', 'EW00120'];
-
-  useEffect(() => {
-    handleSearch('EW00123');
-  }, []);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (idToSearch) => {
     const id = (idToSearch || searchId).trim().toUpperCase();
     if (!id) return;
 
     setLoading(true);
+    setHasSearched(true);
     setError('');
 
     try {
@@ -71,7 +68,7 @@ export default function PublicTrackingSearch() {
                 type="text"
                 value={searchId}
                 onChange={(e) => setSearchId(e.target.value)}
-                placeholder="Enter Item ID (e.g. EW00123)"
+                placeholder="e.g. EW00123"
                 className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#166534]/20 focus:border-[#166534] bg-white shadow-xs font-mono"
               />
             </div>
@@ -84,24 +81,31 @@ export default function PublicTrackingSearch() {
             </button>
           </form>
 
-          {/* Quick Samples */}
-          <div className="flex items-center justify-center gap-2 mt-3 text-xs text-slate-500">
-            <span>Try sample:</span>
-            {sampleIds.map((sample) => (
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Try:</span>
+            {['EW00123', 'EW00122', 'EW00120'].map((sampleId) => (
               <button
-                key={sample}
+                key={sampleId}
                 type="button"
                 onClick={() => {
-                  setSearchId(sample);
-                  handleSearch(sample);
+                  setSearchId(sampleId);
+                  handleSearch(sampleId);
                 }}
-                className="px-2 py-0.5 rounded-md bg-white border border-[#E2E8F0] text-slate-700 hover:border-[#166534] hover:text-[#166534] font-mono text-[11px] transition-colors"
+                className="rounded-lg border border-[#E2E8F0] bg-slate-50 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-600 transition-colors hover:border-emerald-300 hover:bg-emerald-50 hover:text-[#166534]"
               >
-                {sample}
+                {sampleId}
               </button>
             ))}
           </div>
         </div>
+
+        {!hasSearched && !item && (
+          <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-12 text-center">
+            <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#166534]"><Search size={22} /></span>
+            <h2 className="font-semibold text-[#0F172A]">Enter a tracking ID to begin</h2>
+            <p className="mt-1 text-sm text-slate-500">You can find the ID beside the QR code provided when an item was registered.</p>
+          </div>
+        )}
 
         {/* Error Alert */}
         {error && (

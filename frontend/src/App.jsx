@@ -18,6 +18,8 @@ import InspectionPage from './pages/InspectionPage';
 import AdminDashboard from './pages/AdminDashboard';
 import UserManagementPage from './pages/UserManagementPage';
 import ProfilePage from './pages/ProfilePage';
+import CustomerTrackPage from './pages/CustomerTrackPage';
+import ScannerPage from './pages/ScannerPage';
 
 export default function App() {
   return (
@@ -37,6 +39,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <CustomerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/track"
+            element={
+              <ProtectedRoute>
+                <CustomerTrackPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/track/:itemId"
+            element={
+              <ProtectedRoute>
+                <CustomerTrackPage />
               </ProtectedRoute>
             }
           />
@@ -63,6 +81,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <StakeholderDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/scanner"
+            element={
+              <ProtectedRoute>
+                <ScannerPage />
               </ProtectedRoute>
             }
           />

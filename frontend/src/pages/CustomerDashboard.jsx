@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import StatCard from '../components/StatCard';
 import StatusBadge from '../components/StatusBadge';
-import { Package, Truck, Recycle, Scale, PlusCircle, Eye, ArrowRight } from 'lucide-react';
+import { Package, Truck, Recycle, Scale, PlusCircle, RefreshCw } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,159 +12,71 @@ export default function CustomerDashboard() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.getMyItems();
+      setItems(res.data?.items || []);
+    } catch (err) {
+      setError(err.message || 'Unable to load your items. Please try again.');
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (user && user.role && user.role !== 'CUSTOMER' && user.role !== 'ADMIN') {
+    if (user?.role && !['CUSTOMER', 'ADMIN'].includes(user.role)) {
       navigate('/stakeholder', { replace: true });
       return;
     }
-
-    async function loadData() {
-      try {
-        const res = await api.getMyItems();
-        setItems(res.data?.items || res.items || []);
-      } catch (err) {
-        console.error('Failed to load items:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadData();
-  }, [user, navigate]);
+  }, [user, navigate, loadData]);
 
-  // Compute stat card metrics
   const totalItems = items.length;
-  const inTransitCount = items.filter(i => i.currentStatus === 'IN_TRANSIT').length;
-  const recycledCount = items.filter(i => ['PROCESSED', 'RECYCLED', 'REFURBISHED'].includes(i.currentStatus)).length;
-  const totalWeight = items.reduce((acc, curr) => acc + (parseFloat(curr.weight) || 1.5), 0).toFixed(0);
+  const inTransitCount = items.filter((item) => item.currentStatus === 'IN_TRANSIT').length;
+  const recycledCount = items.filter((item) => ['PROCESSED', 'RECYCLED'].includes(item.currentStatus)).length;
+  const knownWeight = items.reduce((sum, item) => sum + (Number(item.weightKg ?? item.weight) || 0), 0);
+  const hasWeight = items.some((item) => Number(item.weightKg ?? item.weight) > 0);
 
   return (
-    <AppLayout
-      title={`Welcome back, ${user?.name || 'Rahul'}!`}
-      subtitle="Here is an overview of your e-waste items."
-    >
-      {/* 4 Summary Stat Cards matching mockup */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <StatCard
-          title="My Items"
-          value={totalItems}
-          icon={Package}
-          iconColor="#166534"
-          iconBg="#DCFCE7"
-        />
-        <StatCard
-          title="In Transit"
-          value={inTransitCount}
-          icon={Truck}
-          iconColor="#2563EB"
-          iconBg="#DBEAFE"
-        />
-        <StatCard
-          title="Recycled"
-          value={recycledCount}
-          icon={Recycle}
-          iconColor="#16A34A"
-          iconBg="#DCFCE7"
-        />
-        <StatCard
-          title="Total Weight"
-          value={`${totalWeight || 12} kg`}
-          icon={Scale}
-          iconColor="#0D9488"
-          iconBg="#CCFBF1"
-        />
+    <AppLayout title={`Welcome back, ${user?.name || 'there'}!`} subtitle="A clear overview of your registered e-waste.">
+      <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div><p className="text-sm text-slate-500">Your e-waste activity</p><h2 className="mt-1 text-xl font-bold tracking-tight text-[#0F172A]">Overview</h2></div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={loadData} className="btn-outline text-sm" disabled={loading}><RefreshCw size={15} className={loading ? 'animate-spin' : ''} />Refresh</button>
+          <Link to="/register-waste" className="btn-primary text-sm no-underline"><PlusCircle size={16} />Register E-Waste</Link>
+        </div>
       </div>
 
-      {/* Recent Items Section */}
-      <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs overflow-hidden">
-        {/* Table Header Bar */}
-        <div className="px-6 py-4.5 border-b border-[#E2E8F0] flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold text-[#0F172A]">Recent Items</h2>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/register-waste"
-              className="btn-primary text-xs font-semibold py-1.5 px-3 rounded-lg flex items-center gap-1.5"
-            >
-              <PlusCircle size={14} />
-              Register Item
-            </Link>
-            <button
-              onClick={() => {}}
-              className="text-xs font-medium text-[#166534] hover:underline cursor-pointer"
-            >
-              View All
-            </button>
-          </div>
-        </div>
+      {error && <div role="alert" className="mb-5 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{error}</div>}
 
-        {/* Table */}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard title="My Items" value={loading ? '—' : totalItems} icon={Package} iconColor="#166534" iconBg="#DCFCE7" />
+        <StatCard title="In Transit" value={loading ? '—' : inTransitCount} icon={Truck} iconColor="#2563EB" iconBg="#DBEAFE" />
+        <StatCard title="Recycled" value={loading ? '—' : recycledCount} icon={Recycle} iconColor="#16A34A" iconBg="#DCFCE7" />
+        <StatCard title="Recorded Weight" value={loading ? '—' : hasWeight ? `${knownWeight.toFixed(1)} kg` : 'Not recorded'} icon={Scale} iconColor="#0D9488" iconBg="#CCFBF1" />
+      </div>
+
+      <section className="overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-[#E2E8F0] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div><h2 className="text-base font-bold text-[#0F172A]">My Registered Items</h2><p className="mt-1 text-xs text-slate-500">Track status and open the public tracking record.</p></div>
+          <span className="text-sm text-slate-500">{loading ? 'Loading…' : `${items.length} item${items.length === 1 ? '' : 's'}`}</span>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-[#F8FAFC] text-[11px] font-semibold uppercase tracking-wider text-slate-500 border-b border-[#E2E8F0]">
-              <tr>
-                <th className="py-3 px-6">Item ID</th>
-                <th className="py-3 px-6">Name</th>
-                <th className="py-3 px-6">Category</th>
-                <th className="py-3 px-6">Date</th>
-                <th className="py-3 px-6">Status</th>
-                <th className="py-3 px-6 text-right">Action</th>
-              </tr>
-            </thead>
+          <table className="w-full min-w-[680px] text-left text-sm">
+            <thead className="border-b border-[#E2E8F0] bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Item ID</th><th className="px-5 py-3">Name</th><th className="px-5 py-3">Category</th><th className="px-5 py-3">Registered</th><th className="px-5 py-3">Status</th><th className="px-5 py-3 text-right">Action</th></tr></thead>
             <tbody className="divide-y divide-[#E2E8F0]">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
-                    Loading registered items...
-                  </td>
-                </tr>
-              ) : items.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400">
-                    No items registered yet.{' '}
-                    <Link to="/register-waste" className="text-[#166534] font-medium underline">
-                      Register your first item.
-                    </Link>
-                  </td>
-                </tr>
-              ) : (
-                items.map((item) => (
-                  <tr key={item.itemId} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3.5 px-6 font-mono font-medium text-slate-800 text-xs">
-                      {item.itemId}
-                    </td>
-                    <td className="py-3.5 px-6 font-medium text-slate-900">
-                      {item.deviceName}
-                    </td>
-                    <td className="py-3.5 px-6 text-slate-600">
-                      {item.category}
-                    </td>
-                    <td className="py-3.5 px-6 text-slate-500 text-xs">
-                      {new Date(item.createdAt).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-                    <td className="py-3.5 px-6">
-                      <StatusBadge status={item.currentStatus} />
-                    </td>
-                    <td className="py-3.5 px-6 text-right">
-                      <button
-                        onClick={() => navigate(`/track/${item.itemId}`)}
-                        className="px-3 py-1 text-xs font-medium text-[#166534] bg-white border border-[#E2E8F0] hover:bg-emerald-50 rounded-md transition-colors"
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              {loading ? <tr><td colSpan={6} className="px-5 py-12 text-center text-sm text-slate-500">Loading registered items…</td></tr>
+                : items.length === 0 ? <tr><td colSpan={6} className="px-5 py-12 text-center"><div className="mx-auto flex max-w-sm flex-col items-center"><span className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#166534]"><Package size={22} /></span><p className="font-semibold text-[#0F172A]">No items registered yet</p><p className="mt-1 text-sm text-slate-500">Register your first electronic item to create its QR tracking record.</p><Link to="/register-waste" className="btn-primary mt-4 text-sm no-underline">Register your first item</Link></div></td></tr>
+                : items.map((item, idx) => <tr key={`${item.itemId || item.id || 'item'}-${idx}`} className="transition-colors hover:bg-slate-50"><td className="whitespace-nowrap px-5 py-4 font-mono text-xs font-semibold text-slate-700">{item.itemId}</td><td className="px-5 py-4 font-semibold text-slate-900">{item.deviceName}</td><td className="px-5 py-4 text-slate-600">{String(item.category || 'Other').replace(/_/g, ' ')}</td><td className="whitespace-nowrap px-5 py-4 text-xs text-slate-500">{item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td><td className="px-5 py-4"><StatusBadge status={item.currentStatus} /></td><td className="px-5 py-4 text-right"><button type="button" onClick={() => navigate(`/dashboard/track?id=${encodeURIComponent(item.itemId)}`)} className="rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-xs font-semibold text-[#166534] transition-colors hover:border-emerald-300 hover:bg-emerald-50">View tracking</button></td></tr>)}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </AppLayout>
   );
 }

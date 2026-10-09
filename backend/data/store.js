@@ -3,6 +3,59 @@ const bcrypt = require('bcryptjs');
 // Pre-seeded demo users with bcrypt hashed passwords ('Password123!')
 const DEMO_PASSWORD_HASH = bcrypt.hashSync('Password123!', 10);
 
+const CATEGORY_MAP = {
+  computers: 'LAPTOP',
+  computer: 'LAPTOP',
+  laptop: 'LAPTOP',
+  laptops: 'LAPTOP',
+  mobile: 'MOBILE',
+  mobiles: 'MOBILE',
+  phone: 'MOBILE',
+  phones: 'MOBILE',
+  desktop: 'DESKTOP',
+  tablet: 'TABLET',
+  peripherals: 'ACCESSORIES',
+  accessories: 'ACCESSORIES',
+  appliances: 'APPLIANCE',
+  appliance: 'APPLIANCE',
+  other: 'OTHER',
+  scrap: 'OTHER',
+};
+
+const CONDITION_MAP = {
+  used: 'WORKING',
+  working: 'WORKING',
+  functional: 'WORKING',
+  'used / functional': 'WORKING',
+  'partially working': 'PARTIALLY_WORKING',
+  partially_working: 'PARTIALLY_WORKING',
+  damaged: 'DAMAGED_SCRAP',
+  damaged_scrap: 'DAMAGED_SCRAP',
+  scrap: 'NON_WORKING',
+  'non-working scrap': 'NON_WORKING',
+  non_working: 'NON_WORKING',
+};
+
+function mapCategory(value) {
+  if (!value) return 'OTHER';
+  const raw = String(value).trim();
+  const upper = raw.toUpperCase().replace(/\s+/g, '_');
+  if (['LAPTOP', 'MOBILE', 'DESKTOP', 'TABLET', 'ACCESSORIES', 'APPLIANCE', 'OTHER'].includes(upper)) {
+    return upper;
+  }
+  return CATEGORY_MAP[raw.toLowerCase()] || 'OTHER';
+}
+
+function mapCondition(value) {
+  if (!value) return 'NON_WORKING';
+  const raw = String(value).trim();
+  const upper = raw.toUpperCase().replace(/\s+/g, '_');
+  if (['WORKING', 'PARTIALLY_WORKING', 'NON_WORKING', 'DAMAGED_SCRAP'].includes(upper)) {
+    return upper;
+  }
+  return CONDITION_MAP[raw.toLowerCase()] || 'NON_WORKING';
+}
+
 class DataStore {
   constructor() {
     this.counters = { itemId: 125 };
@@ -353,9 +406,13 @@ class DataStore {
       const TrackingHistory = require('../models/TrackingHistory');
 
       const mongoUsers = await User.find({}).select('+passwordHash').lean();
+      const legacyIdByEmail = {};
       if (mongoUsers && mongoUsers.length > 0) {
         mongoUsers.forEach(u => {
           const idx = this.users.findIndex(x => x.email.toLowerCase() === u.email.toLowerCase());
+          if (idx >= 0) {
+            legacyIdByEmail[u.email.toLowerCase()] = this.users[idx].id;
+          }
           const userObj = {
             id: u._id.toString(),
             name: u.name,
@@ -373,6 +430,18 @@ class DataStore {
           } else {
             this.users.push(userObj);
           }
+        });
+
+        // Remap in-memory seed ownership from legacy usr_* ids to Mongo ObjectIds
+        Object.entries(legacyIdByEmail).forEach(([email, legacyId]) => {
+          const mongoUser = this.users.find(u => u.email.toLowerCase() === email);
+          if (!mongoUser || legacyId === mongoUser.id) return;
+          this.items.forEach(item => {
+            if (item.ownerId === legacyId) item.ownerId = mongoUser.id;
+          });
+          this.trackingHistory.forEach(evt => {
+            if (evt.performedBy === legacyId) evt.performedBy = mongoUser.id;
+          });
         });
       }
 
@@ -440,8 +509,17 @@ class DataStore {
 
   // --- Sequences ---
   getNextItemId() {
-    this.counters.itemId += 1;
-    const padded = String(this.counters.itemId).padStart(5, '0');
+    let maxId = this.counters.itemId || 100;
+    this.items.forEach(i => {
+      const match = (i.itemId || '').match(/\d+/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (num > maxId) maxId = num;
+      }
+    });
+    maxId += 1;
+    this.counters.itemId = maxId;
+    const padded = String(maxId).padStart(5, '0');
     return `EW${padded}`;
   }
 
@@ -452,8 +530,7 @@ class DataStore {
   }
 
   findUserById(id) {
-    if (!id) return null;
-    return this.users.find(u => u.id === id || (u._id && u._id.toString() === id));
+    return this.users.find(u => u.id === id);
   }
 
   createUser(userData) {
@@ -535,15 +612,17 @@ class DataStore {
   createItem(itemData, ownerId) {
     const itemId = this.getNextItemId();
     const now = new Date().toISOString();
+    const category = mapCategory(itemData.category);
+    const condition = mapCondition(itemData.condition);
     const newItem = {
       id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       itemId,
       ownerId,
       deviceName: itemData.deviceName || itemData.name || 'Electronic Item',
       brand: itemData.brand || '',
-      category: itemData.category || 'Computers',
-      condition: itemData.condition || 'Used',
-      weight: itemData.weight ? String(itemData.weight) : '1.0',
+      category,
+      condition,
+      weight: itemData.weight ? String(itemData.weight) : '',
       quantity: Number(itemData.quantity) || 1,
       pickupLocation: itemData.pickupLocation || 'Pickup Address',
       description: itemData.description || '',
@@ -576,21 +655,35 @@ class DataStore {
       try {
         const Item = require('../models/Item');
         const User = require('../models/User');
-        User.findOne({ email: 'rahul@gmail.com' }).then(u => {
-          const ownerMongoId = (u && u._id) || (mongoose.Types.ObjectId.isValid(ownerId) ? ownerId : new mongoose.Types.ObjectId());
-          return Item.create({
-            itemId,
-            ownerId: ownerMongoId,
-            deviceName: newItem.deviceName,
-            category: newItem.category === 'Computers' ? 'LAPTOP' : (['LAPTOP', 'MOBILE', 'DESKTOP', 'TABLET', 'ACCESSORIES', 'APPLIANCE'].includes(newItem.category) ? newItem.category : 'OTHER'),
-            condition: newItem.condition === 'Used' ? 'PARTIALLY_WORKING' : (['WORKING', 'PARTIALLY_WORKING', 'NON_WORKING', 'DAMAGED_SCRAP'].includes(newItem.condition) ? newItem.condition : 'NON_WORKING'),
-            quantity: newItem.quantity,
-            pickupLocation: newItem.pickupLocation,
-            description: newItem.description,
-            currentStatus: 'REGISTERED',
-            qrCodeUrl: newItem.qrCodeUrl
-          });
-        }).catch(err => console.warn('Atlas item persist warning:', err.message));
+        const owner = this.findUserById(ownerId);
+        const ownerQuery = owner?.email
+          ? User.findOne({ email: owner.email })
+          : Promise.resolve(
+              mongoose.Types.ObjectId.isValid(ownerId)
+                ? { _id: ownerId }
+                : null
+            );
+
+        ownerQuery
+          .then((u) => {
+            if (!u?._id) throw new Error('Could not resolve Mongo owner for new item');
+            return Item.create({
+              itemId,
+              ownerId: u._id,
+              deviceName: newItem.deviceName,
+              category: newItem.category,
+              condition: newItem.condition,
+              quantity: newItem.quantity,
+              pickupLocation: newItem.pickupLocation,
+              description: newItem.description,
+              brand: newItem.brand,
+              weight: Number(newItem.weight) || 1.0,
+              photoUrl: newItem.photoUrl,
+              currentStatus: 'REGISTERED',
+              qrCodeUrl: newItem.qrCodeUrl
+            });
+          })
+          .catch((err) => console.warn('Atlas item persist warning:', err.message));
       } catch (err) {
         console.warn('Atlas item persist error:', err.message);
       }
@@ -600,12 +693,7 @@ class DataStore {
   }
 
   getItemsByOwner(ownerId, { status, page = 1, limit = 50 } = {}) {
-    const user = this.findUserById(ownerId);
-    let filtered = this.items.filter(i => {
-      if (i.ownerId === ownerId) return true;
-      if (user && user.email === 'rahul@gmail.com' && (i.ownerId === 'usr_customer_1' || !i.ownerId)) return true;
-      return false;
-    });
+    let filtered = this.items.filter(i => i.ownerId === ownerId);
     if (status) {
       filtered = filtered.filter(i => i.currentStatus === status);
     }

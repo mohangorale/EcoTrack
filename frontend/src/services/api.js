@@ -20,7 +20,15 @@ apiClient.interceptors.request.use((config) => {
 
 // Response interceptor for consistent error extraction
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const body = response.data;
+    // Backend responses wrap useful payload fields in `data`; expose those fields
+    // at the top level so all screens consume the same, predictable response shape.
+    if (body && typeof body === 'object' && body.data && typeof body.data === 'object') {
+      response.data = { ...body, ...body.data, data: body.data };
+    }
+    return response;
+  },
   (error) => {
     const message = error.response?.data?.message || error.message || 'API request failed';
     const customError = new Error(message);

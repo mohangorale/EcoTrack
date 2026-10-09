@@ -36,10 +36,12 @@ export default function SignupPage() {
 
     try {
       await signup(formData);
+      // Auto login after successful registration
+      await login(formData.email, formData.password);
       setSuccess(true);
       setTimeout(() => {
         navigate('/dashboard');
-      }, 800);
+      }, 1000);
     } catch (err) {
       setError(err.message || 'Account registration failed');
     } finally {

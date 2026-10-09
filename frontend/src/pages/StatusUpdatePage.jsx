@@ -13,8 +13,8 @@ export default function StatusUpdatePage() {
 
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [newStatus, setNewStatus] = useState('UNDER_INSPECTION');
-  const [location, setLocation] = useState(user?.organizationName || 'Central Processing Hub');
+  const [newStatus, setNewStatus] = useState('COLLECTED');
+  const [location, setLocation] = useState(user?.organizationName || '');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -23,7 +23,8 @@ export default function StatusUpdatePage() {
   useEffect(() => {
     async function loadItem() {
       try {
-        const res = await api.getItemDetails(itemId || 'EW00123');
+        if (!itemId) throw new Error('Choose an item from the stakeholder dashboard first.');
+        const res = await api.getItemDetails(itemId);
         setItem(res.data.item);
         // Pre-select appropriate next status
         const curr = res.data.item?.currentStatus;
@@ -64,8 +65,36 @@ export default function StatusUpdatePage() {
     }
   };
 
-  const displayId = item?.itemId || itemId || 'EW00123';
-  const displayStatus = item?.currentStatus || 'IN_TRANSIT';
+  const displayId = item?.itemId || itemId || '';
+  const displayStatus = item?.currentStatus || '';
+
+  const ROLE_STATUS_OPTIONS = {
+    COLLECTION_CENTRE: [{ value: 'COLLECTED', label: 'Collected (Kiosk Intake)' }],
+    TRANSPORTER: [{ value: 'IN_TRANSIT', label: 'In Transit (Logistics)' }],
+    INSPECTOR: [
+      { value: 'UNDER_INSPECTION', label: 'Under Inspection (Lab Bench)' },
+      { value: 'REFURBISHED', label: 'Refurbished (Certified Repair)' },
+      { value: 'SENT_FOR_RECYCLING', label: 'Sent for Recycling (Scrap)' },
+    ],
+    RECYCLER: [{ value: 'PROCESSED', label: 'Processed (Material Shredded)' }],
+    ADMIN: [
+      { value: 'COLLECTED', label: 'Collected (Kiosk Intake)' },
+      { value: 'IN_TRANSIT', label: 'In Transit (Logistics)' },
+      { value: 'UNDER_INSPECTION', label: 'Under Inspection (Lab Bench)' },
+      { value: 'REFURBISHED', label: 'Refurbished (Certified Repair)' },
+      { value: 'SENT_FOR_RECYCLING', label: 'Sent for Recycling (Scrap)' },
+      { value: 'PROCESSED', label: 'Processed (Material Shredded)' },
+    ],
+  };
+
+  const statusOptions = ROLE_STATUS_OPTIONS[user?.role] || ROLE_STATUS_OPTIONS.ADMIN;
+
+  useEffect(() => {
+    const options = ROLE_STATUS_OPTIONS[user?.role] || ROLE_STATUS_OPTIONS.ADMIN;
+    setNewStatus((current) =>
+      options.some((opt) => opt.value === current) ? current : options[0].value
+    );
+  }, [user?.role]);
 
   return (
     <AppLayout
@@ -108,7 +137,7 @@ export default function StatusUpdatePage() {
                 Current Status
               </label>
               <div className="p-2.5 bg-slate-50 rounded-lg border border-[#E2E8F0]">
-                <StatusBadge status={displayStatus} />
+                {displayStatus ? <StatusBadge status={displayStatus} /> : <span className="text-xs text-slate-500">Unavailable</span>}
               </div>
             </div>
 
@@ -122,12 +151,9 @@ export default function StatusUpdatePage() {
                 onChange={(e) => setNewStatus(e.target.value)}
                 className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#166534]/20 focus:border-[#166534] bg-white font-medium"
               >
-                <option value="COLLECTED">Collected (Kiosk Intake)</option>
-                <option value="IN_TRANSIT">In Transit (Logistics)</option>
-                <option value="UNDER_INSPECTION">Under Inspection (Lab Bench)</option>
-                <option value="REFURBISHED">Refurbished (Certified Repair)</option>
-                <option value="SENT_FOR_RECYCLING">Sent for Recycling (Scrap)</option>
-                <option value="PROCESSED">Processed (Material Shredded)</option>
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
               </select>
             </div>
 
@@ -164,7 +190,7 @@ export default function StatusUpdatePage() {
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || loading || !item}
                 className="w-full py-2.5 px-4 rounded-lg bg-[#166534] hover:bg-[#14532D] text-white font-medium text-sm shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {submitting ? (

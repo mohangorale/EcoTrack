@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Leaf, Eye, EyeOff, Lock, Mail, AlertCircle, ArrowRight } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { DEMO_ACCOUNTS } from '../constants/demoAccounts';
+import { useAuth, DEMO_ACCOUNTS } from '../context/AuthContext';
 
 export default function LoginPage() {
   const { login, quickLogin } = useAuth();
@@ -12,7 +11,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -132,21 +130,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2 cursor-pointer text-slate-600">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#166534] focus:ring-[#166534] border-[#E2E8F0]"
-                />
-                <span>Remember me</span>
-              </label>
-              <a href="#" onClick={(e) => { e.preventDefault(); alert('Demo password is Password123!'); }} className="text-[#166534] font-medium hover:underline">
-                Forgot password?
-              </a>
-            </div>
+            <p className="-mt-2 text-xs leading-5 text-slate-500">Use the email address associated with your EcoTrack account. For access issues, contact your administrator.</p>
 
             {/* Submit Button */}
             <button
@@ -176,37 +160,20 @@ export default function LoginPage() {
           {/* Quick Demo Accounts Selection */}
           <div className="mt-6 pt-5 border-t border-[#E2E8F0]">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 text-center mb-3">
-              Instant Demo Sign In:
+              Instant Demo Sign In (password: Password123!)
             </p>
             <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('rahul@gmail.com')}
-                className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-[#166534] border border-[#E2E8F0] text-slate-700 transition-colors text-left"
-              >
-                👤 Customer (Rahul)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('admin@ecotrack.com')}
-                className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-[#166534] border border-[#E2E8F0] text-slate-700 transition-colors text-left"
-              >
-                🛡️ Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('priya@recycle.com')}
-                className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-[#166534] border border-[#E2E8F0] text-slate-700 transition-colors text-left"
-              >
-                ♻️ Recycler (Priya)
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDemoLogin('amit@inspect.com')}
-                className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-[#166534] border border-[#E2E8F0] text-slate-700 transition-colors text-left"
-              >
-                🔬 Inspector (Amit)
-              </button>
+              {DEMO_ACCOUNTS.map((account) => (
+                <button
+                  key={account.email}
+                  type="button"
+                  onClick={() => handleDemoLogin(account.email)}
+                  disabled={loading}
+                  className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-[#166534] border border-[#E2E8F0] text-slate-700 transition-colors text-left disabled:opacity-60"
+                >
+                  {account.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

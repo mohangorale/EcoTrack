@@ -1,12 +1,11 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Printer, Download, X, QrCode, Shield, CheckCircle2 } from 'lucide-react';
+import { Printer, Download, X, QrCode, Shield } from 'lucide-react';
 
 export default function QRCodeModal({ item, onClose }) {
   if (!item) return null;
 
-  // The full public URL encoded into the QR code
-  const publicTrackingUrl = `${window.location.origin}/?track=${item.itemId}`;
+  const publicTrackingUrl = `${window.location.origin}/track/${item.itemId}`;
 
   const handlePrint = () => {
     window.print();
@@ -31,136 +30,86 @@ export default function QRCodeModal({ item, onClose }) {
       downloadLink.href = pngFile;
       downloadLink.click();
     };
-    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div 
-        className="modal-content" 
-        onClick={e => e.stopPropagation()}
-        style={{ maxWidth: '480px', padding: '24px' }}
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-[2px]"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="QR code asset tag"
+    >
+      <div
+        className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xl sm:p-6"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ 
-              width: '32px', 
-              height: '32px', 
-              borderRadius: '8px', 
-              background: 'rgba(16, 185, 129, 0.15)', 
-              color: 'var(--accent-mint)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center' 
-            }}>
-              <QrCode size={18} />
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#166534]">
+              <QrCode size={20} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>E-Waste Digital Asset Tag</h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Unique Physical Traceability Identifier</p>
+              <h3 className="text-base font-bold text-[#0F172A]">E-Waste Digital Asset Tag</h3>
+              <p className="text-xs text-slate-500">Unique physical traceability identifier</p>
             </div>
           </div>
-          <button 
-            className="btn btn-secondary btn-sm" 
+          <button
+            type="button"
             onClick={onClose}
-            style={{ borderRadius: '50%', width: '32px', height: '32px', padding: 0 }}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E2E8F0] text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800"
+            aria-label="Close"
           >
             <X size={16} />
           </button>
         </div>
 
-        {/* Physical Printable Label Box */}
-        <div 
-          className="printable-sticker"
-          style={{
-            background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(14, 22, 38, 0.9) 100%)',
-            border: '2px solid rgba(16, 185, 129, 0.4)',
-            borderRadius: '16px',
-            padding: '24px',
-            textAlign: 'center',
-            marginBottom: '20px',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.5)'
-          }}
-        >
-          <div style={{ fontSize: '0.75rem', letterSpacing: '0.12em', color: 'var(--accent-mint)', fontWeight: 700, marginBottom: '8px' }}>
-            ECOTRACK VERIFIED ASSET TAG
-          </div>
+        <div className="printable-sticker mb-5 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50 to-white p-6 text-center">
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#166534]">
+            EcoTrack Verified Asset Tag
+          </p>
 
-          <div style={{ 
-            background: '#FFFFFF', 
-            padding: '16px', 
-            borderRadius: '12px', 
-            display: 'inline-block',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-            margin: '8px 0'
-          }}>
-            <QRCodeSVG 
+          <div className="mx-auto inline-block rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-sm">
+            <QRCodeSVG
               id="item-qr-code-svg"
-              value={publicTrackingUrl} 
-              size={180} 
+              value={publicTrackingUrl}
+              size={180}
               level="Q"
               includeMargin={false}
             />
           </div>
 
-          <div style={{ 
-            fontFamily: 'var(--font-mono)', 
-            fontSize: '1.5rem', 
-            fontWeight: 800, 
-            letterSpacing: '0.08em', 
-            color: '#FFFFFF',
-            marginTop: '8px'
-          }}>
+          <p className="mt-3 font-mono text-xl font-extrabold tracking-wide text-[#0F172A]">
             {item.itemId}
-          </div>
+          </p>
+          <p className="mt-1 text-sm font-semibold text-slate-800">{item.deviceName}</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Category:{' '}
+            <strong className="text-slate-700">
+              {String(item.category || 'Other').replace(/_/g, ' ')}
+            </strong>
+          </p>
 
-          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', marginTop: '2px' }}>
-            {item.deviceName}
-          </div>
-
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Category: <strong style={{ color: 'var(--text-main)' }}>{item.category}</strong>
-          </div>
-
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            gap: '6px', 
-            fontSize: '0.72rem', 
-            color: 'var(--accent-mint)', 
-            marginTop: '12px',
-            background: 'rgba(16, 185, 129, 0.1)',
-            padding: '4px 10px',
-            borderRadius: '20px'
-          }}>
+          <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold text-[#166534]">
             <Shield size={12} />
             <span>Scan with any camera to verify custody</span>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            className="btn btn-secondary" 
-            style={{ flex: 1 }}
-            onClick={handleDownload}
-          >
+        <div className="grid grid-cols-2 gap-2.5">
+          <button type="button" onClick={handleDownload} className="btn-outline text-sm">
             <Download size={16} />
             Download PNG
           </button>
-          <button 
-            className="btn btn-primary" 
-            style={{ flex: 1 }}
-            onClick={handlePrint}
-          >
+          <button type="button" onClick={handlePrint} className="btn-primary text-sm">
             <Printer size={16} />
-            Print Physical Label
+            Print Label
           </button>
         </div>
 
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', textAlign: 'center', marginTop: '12px' }}>
-          Affix this printed sticker directly to the chassis of your electronic device before handover.
+        <p className="mt-3 text-center text-xs leading-5 text-slate-500">
+          Affix this printed sticker to the device before handover.
         </p>
       </div>
     </div>

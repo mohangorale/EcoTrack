@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AppLayout from '../components/AppLayout';
 import StatusBadge from '../components/StatusBadge';
-import { Search, UserPlus, Edit2, AlertCircle, CheckCircle2, X } from 'lucide-react';
+import { Search, UserPlus, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { api } from '../services/api';
 
 export default function UserManagementPage() {
@@ -16,7 +16,7 @@ export default function UserManagementPage() {
   const [newUserData, setNewUserData] = useState({
     name: '',
     email: '',
-    password: 'Password123!',
+    password: '',
     role: 'COLLECTION_CENTRE',
     organizationName: '',
   });
@@ -67,7 +67,7 @@ export default function UserManagementPage() {
         setNewUserData({
           name: '',
           email: '',
-          password: 'Password123!',
+          password: '',
           role: 'COLLECTION_CENTRE',
           organizationName: '',
         });
@@ -149,7 +149,7 @@ export default function UserManagementPage() {
                         month: 'short',
                         year: 'numeric',
                       })
-                    : '10 Mar 2025';
+                    : '—';
 
                   return (
                     <tr key={u.id} className="hover:bg-slate-50/70 transition-colors">
@@ -164,13 +164,6 @@ export default function UserManagementPage() {
                       </td>
                       <td className="py-3.5 px-6 text-slate-500">{joinedDate}</td>
                       <td className="py-3.5 px-6 text-right space-x-2">
-                        <button
-                          onClick={() => alert(`Edit profile for ${u.name}`)}
-                          className="text-slate-600 hover:text-slate-900 font-medium inline-flex items-center gap-1"
-                        >
-                          <Edit2 size={12} />
-                          <span>Edit</span>
-                        </button>
                         {u.role !== 'ADMIN' && (
                           <button
                             onClick={() => handleToggleStatus(u)}
@@ -193,10 +186,10 @@ export default function UserManagementPage() {
 
       {/* Add User Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-lg max-w-md w-full p-6 text-left">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4 backdrop-blur-sm">
+          <div role="dialog" aria-modal="true" aria-labelledby="add-user-title" className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-[#E2E8F0] bg-white p-5 text-left shadow-xl sm:p-6">
             <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0] mb-4">
-              <h3 className="text-base font-bold text-[#0F172A]">Provision Stakeholder User</h3>
+              <h3 id="add-user-title" className="text-base font-bold text-[#0F172A]">Provision Stakeholder User</h3>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X size={18} />
               </button>

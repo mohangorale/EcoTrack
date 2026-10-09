@@ -51,17 +51,17 @@ stateDiagram-v2
 
 ## 👥 Stakeholder Roles & Pre-Seeded Demo Credentials
 
-EcoTrack includes pre-seeded operational personas allowing instantaneous 1-click evaluation:
+EcoTrack includes pre-seeded operational personas with 1-click demo login on `/login`:
 
 | Role Name | Email Login | Password | Primary Interface / Features |
 |---|---|---|---|
-| **Citizen (Donor)** | `customer@example.com` | `Password123!` | Declare e-waste, generate QR code sticker, print label, view "My Items" list |
-| **Collection Centre** | `collection@example.com` | `Password123!` | Mobile camera scanner, verify device condition, mark as `COLLECTED` |
-| **Logistics Transporter**| `transporter@example.com` | `Password123!` | Scan crates, assign vehicle ID and transit route, mark as `IN_TRANSIT` |
-| **Quality Inspector** | `inspector@example.com` | `Password123!` | Hardware diagnostic tests, route to Refurbishment or Material Recycling |
-| **Smelting Recycler** | `recycler@example.com` | `Password123!` | Recovery yield logging (Copper, Gold, ABS polymers), mark as `PROCESSED` |
-| **System Administrator**| `admin@example.com` | `Password123!` | Real-time KPI telemetry, circular diversion gauge, master items, user provisioning |
-| **Public Citizen / Auditor**| *(No Login Required)* | *(Public)* | Scan any physical QR sticker to inspect the unalterable custody timeline (`/track/:id`) |
+| **Citizen (Donor)** | `rahul@gmail.com` | `Password123!` | Register e-waste, QR sticker, track "My Items" |
+| **Collection Centre** | `sneha@collect.com` | `Password123!` | QR scanner desk, mark items as `COLLECTED` |
+| **Logistics Transporter**| `vikram@transport.com` | `Password123!` | Scanner + status update to `IN_TRANSIT` |
+| **Quality Inspector** | `amit@inspect.com` | `Password123!` | Inspection workbench, refurbish or recycle |
+| **Smelting Recycler** | `priya@recycle.com` | `Password123!` | Mark scrap as `PROCESSED` |
+| **System Administrator**| `admin@ecotrack.com` | `Password123!` | KPI dashboard + user management |
+| **Public Citizen / Auditor**| *(No Login Required)* | *(Public)* | Track any item at `/track` (try `EW00123`) |
 
 ---
 
@@ -71,12 +71,10 @@ EcoTrack includes pre-seeded operational personas allowing instantaneous 1-click
 - **Backend:** Node.js (LTS), Express.js REST API, JSON Web Token (JWT), `bcryptjs` password hashing, Finite State Machine (FSM) engine.
 - **Persistence:** MongoDB Atlas (v6.0+) & Mongoose ODM, with built-in zero-config in-memory persistence adapter for immediate offline execution.
 - **Portals:**
-  - Public Verification Passport (`http://localhost:5173/?track=EW-0001`)
-  - Citizen Donor Portal (`http://localhost:5173/`)
-  - Frontline Scanner (`http://localhost:5173/`)
-  - Inspector Workbench (`http://localhost:5173/`)
-  - Recycler Hub (`http://localhost:5173/`)
-  - Admin Governance Console (`http://localhost:5173/`)
+  - Landing + public track (`http://localhost:5173/` and `/track/EW00123`)
+  - Citizen dashboard (`/dashboard`)
+  - Stakeholder queue (`/stakeholder`) + QR scanner (`/scanner`)
+  - Admin console (`/admin`)
 
 ---
 

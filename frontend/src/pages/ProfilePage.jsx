@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import AppLayout from '../components/AppLayout';
-import { Camera, CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
 
   const [formData, setFormData] = useState({
-    name: user?.name || 'Rahul Patil',
-    email: user?.email || 'rahul@gmail.com',
-    mobile: user?.mobile || '+91 9876543210',
-    address: user?.address || 'Pune, Maharashtra',
+    name: user?.name || '',
+    email: user?.email || '',
+    mobile: user?.mobile || '',
+    address: user?.address || '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -20,10 +20,10 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || 'Rahul Patil',
-        email: user.email || 'rahul@gmail.com',
-        mobile: user.mobile || '+91 9876543210',
-        address: user.address || 'Pune, Maharashtra',
+        name: user.name || '',
+        email: user.email || '',
+        mobile: user.mobile || '',
+        address: user.address || '',
       });
     }
   }, [user]);
@@ -63,14 +63,7 @@ export default function ProfilePage() {
             {user?.role ? user.role.toLowerCase().replace(/_/g, ' ') : 'Customer'}
           </p>
 
-          <button
-            type="button"
-            onClick={() => alert('Photo upload dialog opened.')}
-            className="mt-4 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-50 border border-[#E2E8F0] hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-1.5"
-          >
-            <Camera size={13} />
-            <span>Change Photo</span>
-          </button>
+<p className="mt-3 text-xs text-slate-500">Profile photo upload is not available in this version.</p>
         </div>
 
         {/* Right Form Card matching mockup Screen 14 */}

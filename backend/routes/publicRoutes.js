@@ -23,7 +23,7 @@ router.get('/items/:itemId', (req, res) => {
         item: {
           itemId: item.itemId,
           deviceName: item.deviceName,
-          brand: item.brand || 'Dell',
+          brand: item.brand || '',
           category: item.category,
           condition: item.condition,
           weight: item.weight,
