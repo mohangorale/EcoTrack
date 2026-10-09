@@ -20,11 +20,14 @@ router.post('/', verifyToken, authorizeRoles('CUSTOMER', 'ADMIN'), (req, res) =>
     const item = store.createItem(
       {
         deviceName,
-        category: category || 'OTHER',
-        condition: condition || 'NON_WORKING',
+        brand: req.body.brand || '',
+        category: category || 'Computers',
+        condition: condition || 'Used',
+        weight: req.body.weight || '1.0',
         quantity: quantity || 1,
         pickupLocation,
-        description: description || ''
+        description: description || '',
+        photoUrl: req.body.photoUrl || ''
       },
       req.user.id
     );
@@ -33,13 +36,7 @@ router.post('/', verifyToken, authorizeRoles('CUSTOMER', 'ADMIN'), (req, res) =>
       success: true,
       message: 'Item registered successfully',
       data: {
-        item: {
-          itemId: item.itemId,
-          deviceName: item.deviceName,
-          category: item.category,
-          currentStatus: item.currentStatus,
-          createdAt: item.createdAt
-        },
+        item,
         trackingUrl: item.qrCodeUrl
       }
     });

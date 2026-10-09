@@ -25,12 +25,13 @@ export function AuthProvider({ children }) {
           const res = await api.getMe();
           setUser(res.data.user);
         } catch (err) {
-          console.warn('Session expired, logging in as demo customer');
-          await quickLogin('rahul@gmail.com');
+          console.warn('Session expired, clearing storage');
+          localStorage.removeItem('ecotrack_token');
+          setToken(null);
+          setUser(null);
         }
       } else {
-        // Automatically login as demo customer Rahul for seamless hackathon review
-        await quickLogin('rahul@gmail.com');
+        setUser(null);
       }
       setLoading(false);
     }
@@ -48,6 +49,11 @@ export function AuthProvider({ children }) {
 
   const signup = async (userData) => {
     const res = await api.register(userData);
+    if (res.data?.accessToken) {
+      localStorage.setItem('ecotrack_token', res.data.accessToken);
+      setToken(res.data.accessToken);
+      setUser(res.data.user);
+    }
     return res.data;
   };
 

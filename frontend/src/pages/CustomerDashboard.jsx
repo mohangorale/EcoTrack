@@ -33,10 +33,10 @@ export default function CustomerDashboard() {
   }, [user, navigate]);
 
   // Compute stat card metrics
-  const totalItems = items.length || 5;
-  const inTransitCount = items.filter(i => i.currentStatus === 'IN_TRANSIT').length || 2;
-  const recycledCount = items.filter(i => ['PROCESSED', 'RECYCLED', 'REFURBISHED'].includes(i.currentStatus)).length || 1;
-  const totalWeight = items.reduce((acc, curr) => acc + (parseFloat(curr.weight) || 2.4), 0).toFixed(0);
+  const totalItems = items.length;
+  const inTransitCount = items.filter(i => i.currentStatus === 'IN_TRANSIT').length;
+  const recycledCount = items.filter(i => ['PROCESSED', 'RECYCLED', 'REFURBISHED'].includes(i.currentStatus)).length;
+  const totalWeight = items.reduce((acc, curr) => acc + (parseFloat(curr.weight) || 1.5), 0).toFixed(0);
 
   return (
     <AppLayout
