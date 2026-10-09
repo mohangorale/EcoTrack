@@ -16,10 +16,10 @@ export default function StakeholderDashboard() {
   useEffect(() => {
     async function fetchItems() {
       try {
-        const res = await api.getAdminItems();
-        setItems(res.data.items || []);
+        const res = await api.getStakeholderItems();
+        setItems(res.data?.items || res.items || []);
       } catch (err) {
-        console.error(err);
+        console.error('Failed to load stakeholder manifest:', err);
       } finally {
         setLoading(false);
       }

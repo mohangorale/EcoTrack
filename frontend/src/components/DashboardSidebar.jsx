@@ -41,14 +41,14 @@ export default function DashboardSidebar({ isMobileOpen, onCloseMobile }) {
     { name: 'Received Items', to: '/stakeholder', icon: Package },
     { name: 'Inspection', to: '/inspection/EW00120', icon: ClipboardCheck },
     { name: 'Update Status', to: '/update-status/EW00123', icon: RefreshCw },
-    { name: 'Reports', to: '/admin', icon: FileText },
+    { name: 'Reports', to: '/stakeholder', icon: FileText },
     { name: 'Profile', to: '/profile', icon: User },
   ];
 
   const adminNav = [
     { name: 'Dashboard', to: '/admin', icon: LayoutDashboard },
     { name: 'Users', to: '/admin/users', icon: Users },
-    { name: 'Items', to: '/dashboard', icon: Package },
+    { name: 'Items', to: '/admin', icon: Package },
     { name: 'Reports', to: '/admin', icon: FileText },
     { name: 'Settings', to: '/profile', icon: Settings },
   ];

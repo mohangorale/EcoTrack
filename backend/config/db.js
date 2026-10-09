@@ -10,6 +10,13 @@ async function connectDB() {
   try {
     const conn = await mongoose.connect(uri);
     console.log(`✅ MongoDB Connected Successfully: ${conn.connection.host}/${conn.connection.name}`);
+    
+    // Auto-sync in-memory store with MongoDB Atlas collections
+    const store = require('../data/store');
+    if (typeof store.syncWithMongo === 'function') {
+      await store.syncWithMongo();
+    }
+
     return conn;
   } catch (error) {
     console.error(`❌ MongoDB Connection Failed: ${error.message}`);

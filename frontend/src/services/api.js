@@ -63,6 +63,11 @@ export const api = {
     return res.data;
   },
 
+  getStakeholderItems: async (params = {}) => {
+    const res = await apiClient.get('/items', { params });
+    return res.data;
+  },
+
   getItemDetails: async (itemId) => {
     const res = await apiClient.get(`/items/${itemId}`);
     return res.data;

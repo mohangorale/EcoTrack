@@ -14,10 +14,15 @@ export default function CustomerDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (user && user.role && user.role !== 'CUSTOMER' && user.role !== 'ADMIN') {
+      navigate('/stakeholder', { replace: true });
+      return;
+    }
+
     async function loadData() {
       try {
         const res = await api.getMyItems();
-        setItems(res.data.items || []);
+        setItems(res.data?.items || res.items || []);
       } catch (err) {
         console.error('Failed to load items:', err);
       } finally {
@@ -25,7 +30,7 @@ export default function CustomerDashboard() {
       }
     }
     loadData();
-  }, []);
+  }, [user, navigate]);
 
   // Compute stat card metrics
   const totalItems = items.length || 5;

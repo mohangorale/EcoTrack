@@ -53,8 +53,45 @@ router.post('/', verifyToken, authorizeRoles('CUSTOMER', 'ADMIN'), (req, res) =>
   }
 });
 
+// GET /api/items - Retrieve processing manifest for stakeholders and admins
+router.get(
+  '/',
+  verifyToken,
+  authorizeRoles('COLLECTION_CENTRE', 'TRANSPORTER', 'INSPECTOR', 'RECYCLER', 'ADMIN'),
+  (req, res) => {
+    try {
+      const { status, category, page = 1, limit = 50 } = req.query;
+      const { items, total } = store.getAllItems({
+        status,
+        category,
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10)
+      });
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          items,
+          pagination: {
+            page: parseInt(page, 10),
+            limit: parseInt(limit, 10),
+            total
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Get all items manifest error:', err);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error while fetching items manifest',
+        errorCode: 'INTERNAL_ERROR'
+      });
+    }
+  }
+);
+
 // GET /api/items/my - Customer retrieves own registered items
-router.get('/my', verifyToken, authorizeRoles('CUSTOMER', 'ADMIN'), (req, res) => {
+router.get('/my', verifyToken, (req, res) => {
   try {
     const { status, page = 1, limit = 10 } = req.query;
     const { items, total } = store.getItemsByOwner(req.user.id, {

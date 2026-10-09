@@ -342,6 +342,102 @@ class DataStore {
     return id.toUpperCase().replace(/[^A-Z0-9]/g, '');
   }
 
+  // --- MongoDB Synchronization ---
+  async syncWithMongo() {
+    try {
+      const mongoose = require('mongoose');
+      if (mongoose.connection.readyState !== 1) return;
+
+      const User = require('../models/User');
+      const Item = require('../models/Item');
+      const TrackingHistory = require('../models/TrackingHistory');
+
+      const mongoUsers = await User.find({}).lean();
+      if (mongoUsers && mongoUsers.length > 0) {
+        mongoUsers.forEach(u => {
+          const idx = this.users.findIndex(x => x.email.toLowerCase() === u.email.toLowerCase());
+          const userObj = {
+            id: u._id.toString(),
+            name: u.name,
+            email: u.email,
+            mobile: u.mobile || '',
+            address: u.address || '',
+            passwordHash: u.passwordHash,
+            role: u.role,
+            organizationName: u.organizationName || '',
+            accountStatus: u.accountStatus || 'ACTIVE',
+            createdAt: u.createdAt ? new Date(u.createdAt).toISOString() : new Date().toISOString()
+          };
+          if (idx >= 0) {
+            this.users[idx] = { ...this.users[idx], ...userObj };
+          } else {
+            this.users.push(userObj);
+          }
+        });
+      }
+
+      const mongoItems = await Item.find({}).lean();
+      if (mongoItems && mongoItems.length > 0) {
+        mongoItems.forEach(i => {
+          const idx = this.items.findIndex(x => this.normalizeId(x.itemId) === this.normalizeId(i.itemId));
+          const itemObj = {
+            id: i._id.toString(),
+            itemId: i.itemId,
+            ownerId: i.ownerId ? i.ownerId.toString() : 'usr_customer_1',
+            deviceName: i.deviceName,
+            brand: i.brand || '',
+            category: i.category,
+            condition: i.condition,
+            weight: i.weight ? String(i.weight) : '1.0',
+            quantity: i.quantity || 1,
+            pickupLocation: i.pickupLocation,
+            description: i.description || '',
+            currentStatus: i.currentStatus,
+            qrCodeUrl: i.qrCodeUrl || `/track/${i.itemId}`,
+            inspectionDecision: i.inspectionDecision || null,
+            inspectionNotes: i.inspectionNotes || '',
+            inspectedAt: i.inspectedAt ? new Date(i.inspectedAt).toISOString() : null,
+            inspectedBy: i.inspectedBy ? i.inspectedBy.toString() : null,
+            photoUrl: i.photoUrl || '',
+            createdAt: i.createdAt ? new Date(i.createdAt).toISOString() : new Date().toISOString(),
+            lastUpdatedAt: i.lastUpdatedAt ? new Date(i.lastUpdatedAt).toISOString() : new Date().toISOString()
+          };
+          if (idx >= 0) {
+            this.items[idx] = { ...this.items[idx], ...itemObj };
+          } else {
+            this.items.push(itemObj);
+          }
+        });
+      }
+
+      const mongoHistory = await TrackingHistory.find({}).sort({ createdAt: 1 }).lean();
+      if (mongoHistory && mongoHistory.length > 0) {
+        mongoHistory.forEach(h => {
+          const exists = this.trackingHistory.some(x => 
+            this.normalizeId(x.itemId) === this.normalizeId(h.itemId) && 
+            x.status === h.status
+          );
+          if (!exists) {
+            this.trackingHistory.push({
+              id: h._id.toString(),
+              itemId: h.itemId,
+              status: h.status,
+              location: h.location,
+              notes: h.notes || '',
+              roleAtEvent: h.roleAtEvent,
+              performedBy: h.performedBy ? h.performedBy.toString() : 'usr_staff_1',
+              createdAt: h.createdAt ? new Date(h.createdAt).toISOString() : new Date().toISOString()
+            });
+          }
+        });
+      }
+
+      console.log(`📦 DataStore synchronized with MongoDB Atlas (${this.users.length} users, ${this.items.length} items, ${this.trackingHistory.length} checkpoints)`);
+    } catch (err) {
+      console.warn('MongoDB store sync warning:', err.message);
+    }
+  }
+
   // --- Sequences ---
   getNextItemId() {
     this.counters.itemId += 1;
@@ -374,6 +470,26 @@ class DataStore {
       createdAt: new Date().toISOString()
     };
     this.users.push(newUser);
+
+    // Asynchronously persist to MongoDB Atlas if connected
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const User = require('../models/User');
+        User.create({
+          name: newUser.name,
+          email: newUser.email,
+          mobile: newUser.mobile,
+          passwordHash: newUser.passwordHash,
+          role: newUser.role,
+          organizationName: newUser.organizationName,
+          accountStatus: newUser.accountStatus
+        }).catch(err => console.warn('Atlas user persist warning:', err.message));
+      } catch (err) {
+        console.warn('Atlas user persist error:', err.message);
+      }
+    }
+
     return newUser;
   }
 
@@ -453,6 +569,32 @@ class DataStore {
       createdAt: now
     });
 
+    // Asynchronously persist to MongoDB Atlas if connected
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const Item = require('../models/Item');
+        const User = require('../models/User');
+        User.findOne({ email: 'rahul@gmail.com' }).then(u => {
+          const ownerMongoId = (u && u._id) || (mongoose.Types.ObjectId.isValid(ownerId) ? ownerId : new mongoose.Types.ObjectId());
+          return Item.create({
+            itemId,
+            ownerId: ownerMongoId,
+            deviceName: newItem.deviceName,
+            category: newItem.category === 'Computers' ? 'LAPTOP' : (['LAPTOP', 'MOBILE', 'DESKTOP', 'TABLET', 'ACCESSORIES', 'APPLIANCE'].includes(newItem.category) ? newItem.category : 'OTHER'),
+            condition: newItem.condition === 'Used' ? 'PARTIALLY_WORKING' : (['WORKING', 'PARTIALLY_WORKING', 'NON_WORKING', 'DAMAGED_SCRAP'].includes(newItem.condition) ? newItem.condition : 'NON_WORKING'),
+            quantity: newItem.quantity,
+            pickupLocation: newItem.pickupLocation,
+            description: newItem.description,
+            currentStatus: 'REGISTERED',
+            qrCodeUrl: newItem.qrCodeUrl
+          });
+        }).catch(err => console.warn('Atlas item persist warning:', err.message));
+      } catch (err) {
+        console.warn('Atlas item persist error:', err.message);
+      }
+    }
+
     return newItem;
   }
 
@@ -499,6 +641,34 @@ class DataStore {
       createdAt: now
     });
 
+    // Asynchronously persist to MongoDB Atlas if connected
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const Item = require('../models/Item');
+        const TrackingHistory = require('../models/TrackingHistory');
+        Item.findOneAndUpdate(
+          { itemId: item.itemId },
+          { currentStatus: newStatus, lastUpdatedAt: new Date(now) }
+        ).then(foundItem => {
+          if (foundItem) {
+            TrackingHistory.create({
+              itemId: item.itemId,
+              itemRef: foundItem._id,
+              status: newStatus,
+              location: location || 'EcoTrack Hub',
+              notes: notes || '',
+              roleAtEvent: actor.role || 'ADMIN',
+              performedBy: (mongoose.Types.ObjectId.isValid(actor.id) ? actor.id : foundItem.ownerId),
+              createdAt: new Date(now)
+            }).catch(e => console.warn('Atlas history write warning:', e.message));
+          }
+        }).catch(e => console.warn('Atlas status update warning:', e.message));
+      } catch (err) {
+        console.warn('Atlas status update error:', err.message);
+      }
+    }
+
     return { item, historyEvent };
   }
 
@@ -528,6 +698,40 @@ class DataStore {
       performedBy: actor.id,
       createdAt: now
     });
+
+    // Asynchronously persist to MongoDB Atlas if connected
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const Item = require('../models/Item');
+        const TrackingHistory = require('../models/TrackingHistory');
+        Item.findOneAndUpdate(
+          { itemId: item.itemId },
+          {
+            currentStatus: resultingStatus,
+            inspectionDecision: decision,
+            inspectionNotes: notes || '',
+            inspectedAt: new Date(now),
+            lastUpdatedAt: new Date(now)
+          }
+        ).then(foundItem => {
+          if (foundItem) {
+            TrackingHistory.create({
+              itemId: item.itemId,
+              itemRef: foundItem._id,
+              status: resultingStatus,
+              location: 'Diagnostics Hub',
+              notes: `Inspection Decision: ${decision}. ${notes || ''}`,
+              roleAtEvent: actor.role || 'INSPECTOR',
+              performedBy: (mongoose.Types.ObjectId.isValid(actor.id) ? actor.id : foundItem.ownerId),
+              createdAt: new Date(now)
+            }).catch(e => console.warn('Atlas inspection history warning:', e.message));
+          }
+        }).catch(e => console.warn('Atlas inspection write warning:', e.message));
+      } catch (err) {
+        console.warn('Atlas inspection write error:', err.message);
+      }
+    }
 
     return item;
   }
