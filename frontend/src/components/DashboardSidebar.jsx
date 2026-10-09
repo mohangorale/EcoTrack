@@ -28,7 +28,7 @@ export default function DashboardSidebar({ isMobileOpen, onCloseMobile }) {
   const customerNav = [
     { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard, end: true },
     { name: 'Register E-Waste', to: '/register-waste', icon: PlusCircle },
-    { name: 'Track Item', to: '/dashboard/track', icon: Search },
+    { name: 'Track & Scan QR', to: '/dashboard/track', icon: QrCode },
     { name: 'Profile', to: '/profile', icon: User },
   ];
 

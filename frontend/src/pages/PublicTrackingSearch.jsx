@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PublicNavbar from '../components/PublicNavbar';
 import StatusBadge from '../components/StatusBadge';
 import TrackingTimeline from '../components/TrackingTimeline';
-import { Search, AlertCircle, ArrowRight, Laptop } from 'lucide-react';
+import QRScannerModal from '../components/QRScannerModal';
+import { Search, AlertCircle, ArrowRight, Laptop, QrCode, Camera } from 'lucide-react';
 import { api } from '../services/api';
 
 export default function PublicTrackingSearch() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchId, setSearchId] = useState('');
   const [item, setItem] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (idToSearch) => {
@@ -27,8 +29,10 @@ export default function PublicTrackingSearch() {
     try {
       const itemRes = await api.getPublicItem(id);
       const histRes = await api.getPublicHistory(id);
-      setItem(itemRes.data.item);
-      setHistory(histRes.data.history || []);
+      setItem(itemRes.data?.item || itemRes.item);
+      setHistory(histRes.data?.history || histRes.history || []);
+      setSearchId(id);
+      setSearchParams({ id }, { replace: true });
     } catch (err) {
       setError(`No e-waste item found with ID "${id}". Please check and try again.`);
       setItem(null);
@@ -38,6 +42,25 @@ export default function PublicTrackingSearch() {
     }
   };
 
+  // Handle URL query parameters (?id=EW00123 or ?scan=true)
+  useEffect(() => {
+    const queryId = searchParams.get('id');
+    const shouldScan = searchParams.get('scan') === 'true' || searchParams.get('scan') === '1';
+
+    if (queryId) {
+      setSearchId(queryId);
+      handleSearch(queryId);
+    } else if (shouldScan) {
+      setIsScannerOpen(true);
+    }
+  }, []);
+
+  const handleQrScanned = (scannedId) => {
+    if (!scannedId) return;
+    setSearchId(scannedId);
+    handleSearch(scannedId);
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
       <PublicNavbar />
@@ -45,11 +68,15 @@ export default function PublicTrackingSearch() {
       <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
         {/* Title & Search Bar */}
         <div className="text-center max-w-xl mx-auto mb-8">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[#166534] border border-emerald-200/80 text-xs font-semibold mb-3">
+            <QrCode size={13} />
+            <span>Real-Time E-Waste Traceability</span>
+          </div>
           <h1 className="text-3xl font-extrabold text-[#0F172A] tracking-tight">
             Track Your E-Waste
           </h1>
           <p className="text-xs text-[#64748B] mt-1.5">
-            Enter the item ID or scan the QR code to see real-time status.
+            Enter the item ID or scan the QR code to see real-time lifecycle status.
           </p>
 
           {/* Search Form */}
@@ -58,7 +85,7 @@ export default function PublicTrackingSearch() {
               e.preventDefault();
               handleSearch();
             }}
-            className="flex items-center gap-2 mt-6"
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mt-6"
           >
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -69,16 +96,29 @@ export default function PublicTrackingSearch() {
                 value={searchId}
                 onChange={(e) => setSearchId(e.target.value)}
                 placeholder="e.g. EW00123"
-                className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#166534]/20 focus:border-[#166534] bg-white shadow-xs font-mono"
+                className="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#166534]/20 focus:border-[#166534] bg-white shadow-xs font-mono uppercase"
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="py-2.5 px-6 rounded-lg bg-[#166534] hover:bg-[#14532D] text-white font-medium text-sm shadow-xs transition-all flex items-center gap-1.5 shrink-0"
-            >
-              {loading ? 'Searching...' : 'Track'}
-            </button>
+            
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsScannerOpen(true)}
+                className="flex-1 sm:flex-initial py-2.5 px-4 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#166534] border border-emerald-300 font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-1.5"
+                title="Scan QR Code with camera or file"
+              >
+                <Camera size={16} />
+                <span>Scan QR</span>
+              </button>
+
+              <button
+                type="submit"
+                disabled={loading || !searchId.trim()}
+                className="flex-1 sm:flex-initial py-2.5 px-6 rounded-lg bg-[#166534] hover:bg-[#14532D] disabled:opacity-50 text-white font-medium text-sm shadow-xs transition-all flex items-center justify-center gap-1.5 shrink-0"
+              >
+                {loading ? 'Searching...' : 'Track'}
+              </button>
+            </div>
           </form>
 
           <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -101,9 +141,23 @@ export default function PublicTrackingSearch() {
 
         {!hasSearched && !item && (
           <div className="rounded-2xl border border-dashed border-[#CBD5E1] bg-white px-6 py-12 text-center">
-            <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#166534]"><Search size={22} /></span>
-            <h2 className="font-semibold text-[#0F172A]">Enter a tracking ID to begin</h2>
-            <p className="mt-1 text-sm text-slate-500">You can find the ID beside the QR code provided when an item was registered.</p>
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-[#166534]">
+              <QrCode size={26} />
+            </div>
+            <h2 className="font-bold text-[#0F172A] text-base">Enter a tracking ID or scan a QR code</h2>
+            <p className="mt-1 text-sm text-slate-500 max-w-md mx-auto">
+              Scan the physical EcoTrack QR sticker affixed to your electronic device, or enter the ID above.
+            </p>
+            <div className="mt-5 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsScannerOpen(true)}
+                className="btn-primary text-xs font-semibold py-2.5 px-5"
+              >
+                <Camera size={16} />
+                Open Live QR Scanner
+              </button>
+            </div>
           </div>
         )}
 
@@ -179,6 +233,14 @@ export default function PublicTrackingSearch() {
           </div>
         )}
       </main>
+
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleQrScanned}
+        title="Scan E-Waste QR Tracking Code"
+      />
     </div>
   );
 }
+

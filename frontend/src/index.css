@@ -176,3 +176,14 @@
   }
   .printable-sticker button { display: none !important; }
 }
+
+@keyframes qrLaser {
+  0% { transform: translateY(0); opacity: 0.8; }
+  50% { transform: translateY(200px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.8; }
+}
+
+.qr-scanner-laser {
+  animation: qrLaser 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+

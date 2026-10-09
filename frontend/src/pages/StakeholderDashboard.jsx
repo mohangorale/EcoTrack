@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import StatCard from '../components/StatCard';
 import StatusBadge from '../components/StatusBadge';
-import { Package, RefreshCw, Recycle, Scale, ClipboardCheck } from 'lucide-react';
+import QRScannerModal from '../components/QRScannerModal';
+import { Package, RefreshCw, Recycle, Scale, ClipboardCheck, QrCode, Camera } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,6 +14,7 @@ export default function StakeholderDashboard() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -36,6 +38,12 @@ export default function StakeholderDashboard() {
   const knownWeight = items.reduce((sum, item) => sum + (Number(item.weightKg ?? item.weight) || 0), 0);
   const hasWeight = items.some((item) => Number(item.weightKg ?? item.weight) > 0);
 
+  const handleScanSuccess = (scannedId) => {
+    if (scannedId) {
+      navigate(`/scanner?id=${encodeURIComponent(scannedId)}`);
+    }
+  };
+
   return (
     <AppLayout title={`${user?.role?.replace(/_/g, ' ') || 'Stakeholder'} Dashboard`} subtitle="Review the e-waste manifest and record the next valid step.">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -43,10 +51,20 @@ export default function StakeholderDashboard() {
           <p className="text-sm text-slate-500">Operations</p>
           <h2 className="mt-1 text-xl font-bold tracking-tight text-[#0F172A]">Processing Overview</h2>
         </div>
-        <button type="button" onClick={fetchItems} disabled={loading} className="btn-outline self-start sm:self-auto text-xs sm:text-sm">
-          <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
-          Refresh queue
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={fetchItems} disabled={loading} className="btn-outline self-start sm:self-auto text-xs sm:text-sm">
+            <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+            Refresh queue
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsScannerOpen(true)}
+            className="btn-primary self-start sm:self-auto text-xs sm:text-sm"
+          >
+            <Camera size={15} />
+            Scan QR Code
+          </button>
+        </div>
       </div>
 
       {error && <div role="alert" className="mb-5 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{error}</div>}
@@ -157,6 +175,13 @@ export default function StakeholderDashboard() {
           </table>
         </div>
       </section>
+
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleScanSuccess}
+        title="Scan E-Waste QR Code"
+      />
     </AppLayout>
   );
 }

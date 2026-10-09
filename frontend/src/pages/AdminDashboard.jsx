@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import StatCard from '../components/StatCard';
 import StatusBadge from '../components/StatusBadge';
-import { Package, Activity, Recycle, Users, ArrowRight, RefreshCw, ClipboardList } from 'lucide-react';
+import QRScannerModal from '../components/QRScannerModal';
+import { Package, Activity, Recycle, Users, ArrowRight, RefreshCw, ClipboardList, Camera, QrCode } from 'lucide-react';
 import { api } from '../services/api';
 
 const STATUS_LABELS = {
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   async function loadDashboard() {
     setLoading(true);
@@ -53,11 +55,20 @@ export default function AdminDashboard() {
   const statusTotal = Math.max(items.length, 1);
   const recentItems = [...items].sort((a, b) => new Date(b.lastUpdatedAt || b.createdAt || 0) - new Date(a.lastUpdatedAt || a.createdAt || 0)).slice(0, 5);
 
+  const handleScanSuccess = (scannedId) => {
+    if (scannedId) {
+      navigate(`/track/${encodeURIComponent(scannedId)}`);
+    }
+  };
+
   return (
     <AppLayout title="Admin Dashboard" subtitle="Monitor e-waste records and system users from one place.">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div><p className="text-sm text-slate-500">System overview</p><h2 className="mt-1 text-xl font-bold tracking-tight text-[#0F172A]">Traceability Summary</h2></div>
-        <button type="button" onClick={loadDashboard} disabled={loading} className="btn-outline self-start text-sm sm:self-auto"><RefreshCw size={15} className={loading ? 'animate-spin' : ''} />Refresh data</button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={loadDashboard} disabled={loading} className="btn-outline self-start text-xs sm:text-sm sm:self-auto"><RefreshCw size={15} className={loading ? 'animate-spin' : ''} />Refresh data</button>
+          <button type="button" onClick={() => setIsScannerOpen(true)} className="btn-primary self-start text-xs sm:text-sm sm:self-auto"><Camera size={15} />Scan QR</button>
+        </div>
       </div>
       {error && <div role="alert" className="mb-5 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{error}</div>}
 
@@ -79,6 +90,13 @@ export default function AdminDashboard() {
           {loading ? <p className="px-5 py-10 text-center text-sm text-slate-500">Loading recent items…</p> : recentItems.length === 0 ? <div className="px-5 py-10 text-center"><p className="text-sm font-semibold text-slate-700">No recent activity</p><p className="mt-1 text-xs text-slate-500">Item updates will appear here when available.</p></div> : <div className="divide-y divide-[#E2E8F0]">{recentItems.map((item) => <div key={item.itemId} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"><div className="min-w-0"><p className="break-words font-mono text-xs font-bold text-slate-800">{item.itemId}</p><p className="mt-1 truncate text-sm font-semibold text-slate-900">{item.deviceName}</p><p className="mt-1 text-xs text-slate-500">Updated {item.lastUpdatedAt || item.createdAt ? new Date(item.lastUpdatedAt || item.createdAt).toLocaleString() : 'time unavailable'}</p></div><div className="flex items-center justify-between gap-3 sm:justify-end"><StatusBadge status={item.currentStatus} /><button type="button" onClick={() => navigate(`/track/${encodeURIComponent(item.itemId)}`)} className="text-xs font-semibold text-[#166534] hover:underline">View</button></div></div>)}</div>}
         </section>
       </div>
+
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleScanSuccess}
+        title="Admin E-Waste QR Scan"
+      />
     </AppLayout>
   );
 }

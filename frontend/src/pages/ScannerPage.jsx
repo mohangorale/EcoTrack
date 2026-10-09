@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import StatusBadge from '../components/StatusBadge';
+import QRScannerModal from '../components/QRScannerModal';
 import {
   Search,
   MapPin,
@@ -10,6 +11,7 @@ import {
   QrCode,
   RefreshCw,
   ArrowRight,
+  Camera,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -25,6 +27,7 @@ const ROLE_NEXT_STATUS = {
 export default function ScannerPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [manualInput, setManualInput] = useState('');
   const [item, setItem] = useState(null);
@@ -34,6 +37,7 @@ export default function ScannerPage() {
   const [success, setSuccess] = useState('');
   const [location, setLocation] = useState(user?.organizationName || '');
   const [notes, setNotes] = useState('');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   useEffect(() => {
     if (user?.role === 'CUSTOMER') {
@@ -57,9 +61,8 @@ export default function ScannerPage() {
             ? 'PROCESSED'
             : 'COLLECTED');
 
-  const handleLookup = async (e) => {
-    e?.preventDefault?.();
-    const id = manualInput.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const performLookup = async (idToLook) => {
+    const id = (idToLook || manualInput).trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (!id) return;
 
     setLoading(true);
@@ -71,12 +74,30 @@ export default function ScannerPage() {
       const res = await api.getItemDetails(id);
       setItem(res.data?.item || res.item);
       setManualInput(id);
+      setSearchParams({ id }, { replace: true });
     } catch (err) {
       setError(err.message || `No item found for "${id}". Try EW00123.`);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleLookup = (e) => {
+    e?.preventDefault?.();
+    performLookup();
+  };
+
+  // Auto-lookup if ID is in URL or auto-open scanner if scan=true
+  useEffect(() => {
+    const qId = searchParams.get('id');
+    const qScan = searchParams.get('scan') === 'true' || searchParams.get('scan') === '1';
+    if (qId) {
+      setManualInput(qId);
+      performLookup(qId);
+    } else if (qScan) {
+      setIsScannerOpen(true);
+    }
+  }, []);
 
   const handleUpdateStatus = async () => {
     if (!item || !suggestedStatus) return;
@@ -133,10 +154,21 @@ export default function ScannerPage() {
                 className="w-full rounded-xl border border-[#E2E8F0] bg-slate-50 py-2.5 pl-9 pr-3 font-mono text-sm uppercase focus:border-[#166534] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#166534]/20"
               />
             </div>
-            <button type="submit" disabled={loading || !manualInput.trim()} className="btn-primary text-sm justify-center">
-              {loading ? <RefreshCw size={15} className="animate-spin" /> : <Search size={15} />}
-              {loading ? 'Looking up…' : 'Find Item'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsScannerOpen(true)}
+                className="btn-outline text-sm px-4 py-2.5 border-emerald-300 bg-emerald-50/70 text-[#166534] hover:bg-emerald-100 flex items-center justify-center gap-1.5 flex-1 sm:flex-initial"
+                title="Open live camera QR scanner"
+              >
+                <Camera size={16} />
+                <span>Scan Camera</span>
+              </button>
+              <button type="submit" disabled={loading || !manualInput.trim()} className="btn-primary text-sm justify-center flex-1 sm:flex-initial">
+                {loading ? <RefreshCw size={15} className="animate-spin" /> : <Search size={15} />}
+                {loading ? 'Looking up…' : 'Find Item'}
+              </button>
+            </div>
           </form>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -249,6 +281,16 @@ export default function ScannerPage() {
           </section>
         )}
       </div>
+
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={(id) => {
+          setManualInput(id);
+          performLookup(id);
+        }}
+        title="Live QR Scanner Desk"
+      />
     </AppLayout>
   );
 }

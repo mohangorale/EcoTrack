@@ -4,6 +4,7 @@ import AppLayout from '../components/AppLayout';
 import StatusBadge from '../components/StatusBadge';
 import TrackingTimeline from '../components/TrackingTimeline';
 import QRCodeModal from '../components/QRCodeModal';
+import QRScannerModal from '../components/QRScannerModal';
 import { 
   Search, 
   Package, 
@@ -19,7 +20,8 @@ import {
   MapPin, 
   ShieldCheck,
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  Camera
 } from 'lucide-react';
 import { api } from '../services/api';
 
@@ -95,13 +97,17 @@ export default function CustomerTrackPage() {
     }
   }, [setSearchParams]);
 
-  // Auto-search if ID is in URL query
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+
+  // Auto-search if ID is in URL query or auto-open scanner if scan=true
   useEffect(() => {
     if (queryId) {
       setSearchId(queryId);
       fetchTracking(queryId);
+    } else if (searchParams.get('scan') === 'true' || searchParams.get('scan') === '1') {
+      setIsScannerOpen(true);
     }
-  }, [queryId, fetchTracking]);
+  }, [queryId, searchParams, fetchTracking]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -146,26 +152,37 @@ export default function CustomerTrackPage() {
                   value={searchId}
                   onChange={(e) => setSearchId(e.target.value)}
                   placeholder="Enter tracking ID (e.g. EW00123)"
-                  className="w-full pl-10 pr-4 py-2.5 text-sm font-mono rounded-xl border border-[#CBD5E1] bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#166534]/20 focus:border-[#166534] transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 text-sm font-mono uppercase rounded-xl border border-[#CBD5E1] bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#166534]/20 focus:border-[#166534] transition-all"
                 />
               </div>
-              <button
-                type="submit"
-                disabled={loading || !searchId.trim()}
-                className="btn-primary text-sm px-6 py-2.5 rounded-xl shrink-0 justify-center"
-              >
-                {loading ? (
-                  <>
-                    <RefreshCw size={16} className="animate-spin" />
-                    <span>Searching...</span>
-                  </>
-                ) : (
-                  <>
-                    <Search size={16} />
-                    <span>Track Status</span>
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsScannerOpen(true)}
+                  className="btn-outline text-sm px-4 py-2.5 rounded-xl border-emerald-300 bg-emerald-50/60 text-[#166534] hover:bg-emerald-100 flex items-center justify-center gap-1.5 flex-1 sm:flex-initial"
+                  title="Scan QR Code with camera"
+                >
+                  <Camera size={16} />
+                  <span>Scan QR</span>
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading || !searchId.trim()}
+                  className="btn-primary text-sm px-6 py-2.5 rounded-xl shrink-0 justify-center flex-1 sm:flex-initial"
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw size={16} className="animate-spin" />
+                      <span>Searching...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search size={16} />
+                      <span>Track Status</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
           </div>
 
@@ -363,13 +380,24 @@ export default function CustomerTrackPage() {
         ) : null}
       </div>
 
-      {/* QR Code Modal */}
+      {/* QR Code Display Modal */}
       {selectedQRItem && (
         <QRCodeModal
           item={selectedQRItem}
           onClose={() => setSelectedQRItem(null)}
         />
       )}
+
+      {/* QR Code Live Camera Scanner Modal */}
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={(id) => {
+          setSearchId(id);
+          fetchTracking(id);
+        }}
+        title="Scan E-Waste QR Tracking Code"
+      />
     </AppLayout>
   );
 }

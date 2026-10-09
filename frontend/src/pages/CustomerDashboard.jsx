@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import StatCard from '../components/StatCard';
 import StatusBadge from '../components/StatusBadge';
-import { Package, Truck, Recycle, Scale, PlusCircle, RefreshCw } from 'lucide-react';
+import QRScannerModal from '../components/QRScannerModal';
+import { Package, Truck, Recycle, Scale, PlusCircle, RefreshCw, QrCode, Camera } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,6 +14,7 @@ export default function CustomerDashboard() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -42,6 +44,12 @@ export default function CustomerDashboard() {
   const knownWeight = items.reduce((sum, item) => sum + (Number(item.weightKg ?? item.weight) || 0), 0);
   const hasWeight = items.some((item) => Number(item.weightKg ?? item.weight) > 0);
 
+  const handleScanSuccess = (scannedId) => {
+    if (scannedId) {
+      navigate(`/dashboard/track?id=${encodeURIComponent(scannedId)}`);
+    }
+  };
+
   return (
     <AppLayout title={`Welcome back, ${user?.name || 'there'}!`} subtitle="A clear overview of your registered e-waste.">
       <div className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
@@ -49,10 +57,19 @@ export default function CustomerDashboard() {
           <p className="text-sm text-slate-500">Your e-waste activity</p>
           <h2 className="mt-1 text-xl font-bold tracking-tight text-[#0F172A]">Overview</h2>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button type="button" onClick={loadData} className="btn-outline text-xs sm:text-sm flex-1 sm:flex-initial justify-center" disabled={loading}>
             <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
             Refresh
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsScannerOpen(true)}
+            className="btn-outline text-xs sm:text-sm border-emerald-300 bg-emerald-50/60 text-[#166534] hover:bg-emerald-100 flex-1 sm:flex-initial justify-center"
+            title="Scan QR Code with camera"
+          >
+            <Camera size={15} />
+            Scan QR
           </button>
           <Link to="/register-waste" className="btn-primary text-xs sm:text-sm flex-1 sm:flex-initial justify-center no-underline">
             <PlusCircle size={16} />
@@ -171,6 +188,13 @@ export default function CustomerDashboard() {
           </table>
         </div>
       </section>
+
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleScanSuccess}
+        title="Scan E-Waste QR Code"
+      />
     </AppLayout>
   );
 }
