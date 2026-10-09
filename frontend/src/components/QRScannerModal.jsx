@@ -46,7 +46,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan, title = 'Scan 
     setIsScanning(false);
   };
 
-  // Start camera
+  // Start camera (strictly back / rear camera only)
   const startCamera = async (cameraIdToUse = null) => {
     setCameraError('');
     setIsStarting(true);
@@ -64,21 +64,33 @@ export default function QRScannerModal({ isOpen, onClose, onScan, title = 'Scan 
       const qrScanner = new Html5Qrcode(containerId);
       html5QrCodeRef.current = qrScanner;
 
-      // Get cameras if not already populated
-      let availableCameras = cameras;
-      if (availableCameras.length === 0) {
+      // Query cameras and strictly exclude any front / user / selfie camera
+      let rearCameras = cameras;
+      if (rearCameras.length === 0) {
         try {
           const devices = await Html5Qrcode.getCameras();
           if (devices && devices.length > 0) {
-            setCameras(devices);
-            availableCameras = devices;
+            // Filter OUT front cameras completely
+            const filtered = devices.filter(
+              (d) => !/front|user|selfie|face|facetime/i.test(d.label || '')
+            );
+            rearCameras = filtered.length > 0 ? filtered : devices;
+            setCameras(rearCameras);
           }
         } catch (e) {
-          // If getCameras fails, we will fall back to facingMode
+          // If getCameras fails, we fall back to facingMode
         }
       }
 
-      const cameraConfig = cameraIdToUse || (availableCameras.length > 0 ? availableCameras[0].id : { facingMode: 'environment' });
+      // Explicitly find back/rear camera by label if available
+      const detectedBack = rearCameras.find((c) =>
+        /back|rear|environment|world/i.test(c.label || '')
+      );
+
+      // Camera config: strictly prioritize back camera / facingMode: "environment"
+      const cameraConfig =
+        cameraIdToUse ||
+        (detectedBack ? detectedBack.id : { facingMode: 'environment' });
 
       await qrScanner.start(
         cameraConfig,
@@ -100,11 +112,11 @@ export default function QRScannerModal({ isOpen, onClose, onScan, title = 'Scan 
 
       setIsScanning(true);
     } catch (err) {
-      console.warn('Failed to start camera:', err);
+      console.warn('Failed to start rear camera:', err);
       setCameraError(
         err?.message?.includes('NotAllowedError') || err?.message?.includes('Permission')
           ? 'Camera access was denied. Please allow camera permissions in your browser or switch to "Upload QR Image".'
-          : 'Unable to start camera. You can upload an image with a QR code or use demo samples.'
+          : 'Unable to start rear camera. You can upload an image with a QR code or use demo samples.'
       );
     } finally {
       setIsStarting(false);
@@ -293,16 +305,21 @@ export default function QRScannerModal({ isOpen, onClose, onScan, title = 'Scan 
                 )}
               </div>
 
-              {/* Camera Controls / Switch */}
-              <div className="mt-3 flex items-center gap-3">
+              {/* Camera Controls / Status */}
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 bg-emerald-100 rounded-full">
+                  <Camera size={12} />
+                  Back Camera Active
+                </span>
+
                 {cameras.length > 1 && (
                   <button
                     type="button"
                     onClick={handleSwitchCamera}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                   >
-                    <SwitchCamera size={14} />
-                    Switch Camera
+                    <SwitchCamera size={13} />
+                    Switch Rear Lens
                   </button>
                 )}
 
@@ -310,7 +327,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan, title = 'Scan 
                   <button
                     type="button"
                     onClick={() => startCamera(selectedCameraId)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#166534] bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-200"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-[#166534] bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors border border-emerald-200"
                   >
                     <RefreshCw size={13} />
                     Retry Camera
