@@ -43,11 +43,29 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mount modular route groups
+// Mount modular route groups (supports both /api/* and root /*)
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+
 app.use('/api/items', itemRoutes);
+app.use('/items', itemRoutes);
+
 app.use('/api/public', publicRoutes);
+app.use('/public', publicRoutes);
+
 app.use('/api/admin', adminRoutes);
+app.use('/admin', adminRoutes);
+
+app.get('/health', (req, res) => {
+  const isMongoConnected = mongoose.connection.readyState === 1;
+  return res.status(200).json({
+    success: true,
+    message: 'EcoTrack backend is running',
+    database: isMongoConnected ? 'MongoDB Atlas (Connected)' : 'In-Memory Storage Mode (Active)',
+    mongoReadyState: mongoose.connection.readyState,
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Catch-all 404 handler
 app.use((req, res) => {
