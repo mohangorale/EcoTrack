@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Leaf, LogIn, UserPlus, LayoutDashboard, QrCode } from 'lucide-react';
+import { Leaf, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function PublicNavbar() {
@@ -22,12 +22,6 @@ export default function PublicNavbar() {
           </Link>
 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
-            <Link to="/track" className="btn-outline text-xs sm:text-sm px-2.5 sm:px-3.5 py-1.5 sm:py-2 no-underline inline-flex items-center gap-1.5 text-slate-700 hover:text-[#166534]">
-              <QrCode size={15} className="text-[#166534]" />
-              <span className="hidden sm:inline">Track / Scan QR</span>
-              <span className="sm:hidden">Track</span>
-            </Link>
-
             {user ? (
               <Link to={dashboardPath} className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 no-underline">
                 <LayoutDashboard size={15} />
