@@ -64,7 +64,7 @@ export default function QRCodeCard({ itemId, trackingUrl }) {
       </div>
 
       {/* Action Buttons matching mockup */}
-      <div className="flex items-center gap-3 mt-4">
+      <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
         <button
           onClick={handleDownload}
           className="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-[#E2E8F0] rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5"

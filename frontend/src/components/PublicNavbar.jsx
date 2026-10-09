@@ -21,20 +21,20 @@ export default function PublicNavbar() {
             </span>
           </Link>
 
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
             {user ? (
-              <Link to={dashboardPath} className="btn-primary text-sm no-underline">
-                <LayoutDashboard size={16} />
+              <Link to={dashboardPath} className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 no-underline">
+                <LayoutDashboard size={15} />
                 Dashboard
               </Link>
             ) : (
               <>
-                <Link to="/login" className="btn-outline text-sm no-underline inline-flex">
-                  <LogIn size={15} />
+                <Link to="/login" className="btn-outline text-xs sm:text-sm px-2.5 sm:px-4 py-1.5 sm:py-2 no-underline inline-flex">
+                  <LogIn size={14} />
                   Login
                 </Link>
-                <Link to="/signup" className="btn-primary text-sm no-underline">
-                  <UserPlus size={15} />
+                <Link to="/signup" className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 no-underline">
+                  <UserPlus size={14} />
                   <span>Sign Up</span>
                 </Link>
               </>

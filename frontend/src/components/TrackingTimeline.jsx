@@ -50,7 +50,7 @@ export default function TrackingTimeline({ history = [], currentStatus = '' }) {
           : 'Pending';
 
         return (
-          <div key={idx} className="relative flex items-start justify-between gap-4">
+          <div key={idx} className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
             {/* Circle Node */}
             <div
               className={`absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center ring-2 bg-white ${color}`}
@@ -77,7 +77,7 @@ export default function TrackingTimeline({ history = [], currentStatus = '' }) {
             </div>
 
             {/* Timestamp */}
-            <div className="text-xs font-medium text-slate-500 shrink-0 text-right">
+            <div className="text-[11px] sm:text-xs font-medium text-slate-400 sm:text-slate-500 sm:shrink-0 pl-2 sm:pl-0 sm:text-right">
               {dateFormatted}
             </div>
           </div>

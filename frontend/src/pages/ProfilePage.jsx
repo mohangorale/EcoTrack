@@ -54,8 +54,8 @@ export default function ProfilePage() {
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl">
         {/* Left Profile Avatar Card matching mockup Screen 14 */}
-        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-8 text-center flex flex-col items-center justify-center">
-          <div className="w-24 h-24 rounded-full bg-[#1E3A8A] text-white font-bold text-3xl flex items-center justify-center shadow-sm mb-4 ring-4 ring-slate-100">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-6 sm:p-8 text-center flex flex-col items-center justify-center">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#1E3A8A] text-white font-bold text-2xl sm:text-3xl flex items-center justify-center shadow-sm mb-4 ring-4 ring-slate-100">
             {initial}
           </div>
           <h2 className="text-lg font-bold text-[#0F172A]">{formData.name}</h2>
@@ -63,11 +63,11 @@ export default function ProfilePage() {
             {user?.role ? user.role.toLowerCase().replace(/_/g, ' ') : 'Customer'}
           </p>
 
-<p className="mt-3 text-xs text-slate-500">Profile photo upload is not available in this version.</p>
+          <p className="mt-3 text-xs text-slate-500">Profile photo upload is not available in this version.</p>
         </div>
 
         {/* Right Form Card matching mockup Screen 14 */}
-        <div className="md:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-6 sm:p-8">
+        <div className="md:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-4 sm:p-8">
           {error && (
             <div className="mb-5 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />

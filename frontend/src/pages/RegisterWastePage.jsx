@@ -129,7 +129,7 @@ export default function RegisterWastePage() {
       subtitle="Add details and photos of your electronic waste item to generate its QR tracking passport."
     >
       <div className="max-w-3xl">
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-xs p-6 sm:p-8">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-xs p-4 sm:p-8">
           {error && (
             <div className="mb-6 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0 text-rose-600" />
@@ -137,9 +137,9 @@ export default function RegisterWastePage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             {/* Project Image Selection Section */}
-            <div className="rounded-xl border border-[#CBD5E1] bg-slate-50/70 p-4">
+            <div className="rounded-xl border border-[#CBD5E1] bg-slate-50/70 p-3 sm:p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
@@ -163,7 +163,7 @@ export default function RegisterWastePage() {
               </div>
 
               {/* 4 Device Preset Images Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                 {DEVICE_PRESETS.map((preset) => {
                   const isSelected = formData.photoUrl === preset.url;
                   return (
@@ -198,8 +198,8 @@ export default function RegisterWastePage() {
               </div>
 
               {/* Custom Upload or Active Preview Bar */}
-              <div className="mt-3 pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="mt-3 pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3">
+                <div className="flex items-center gap-2.5 w-full sm:w-auto">
                   {formData.photoUrl ? (
                     <div className="flex items-center gap-2.5">
                       <div className="w-10 h-10 rounded-lg overflow-hidden border border-[#CBD5E1] shrink-0 bg-white">
@@ -222,7 +222,7 @@ export default function RegisterWastePage() {
                 </div>
 
                 {/* Upload button */}
-                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#CBD5E1] bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-colors shrink-0">
+                <label className="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-[#CBD5E1] bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-colors w-full sm:w-auto shrink-0">
                   <UploadCloud size={14} className="text-[#166534]" />
                   <span>Upload custom photo</span>
                   <input

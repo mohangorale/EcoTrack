@@ -61,7 +61,7 @@ export default function AdminDashboard() {
       </div>
       {error && <div role="alert" className="mb-5 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{error}</div>}
 
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-8 grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Items in Registry" value={loading ? '—' : items.length} icon={Package} iconColor="#166534" iconBg="#DCFCE7" />
         <StatCard title="Active Workflow" value={loading ? '—' : activeItems} icon={Activity} iconColor="#2563EB" iconBg="#DBEAFE" />
         <StatCard title="Processed for Recycling" value={loading ? '—' : processedItems} icon={Recycle} iconColor="#16A34A" iconBg="#DCFCE7" />
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm sm:p-6">
+        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-6 shadow-sm">
           <div className="mb-5 flex items-start justify-between gap-3"><div><h2 className="text-base font-bold text-[#0F172A]">Items by Status</h2><p className="mt-1 text-xs text-slate-500">Distribution of the items returned by the API.</p></div><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{items.length} total</span></div>
           {loading ? <p className="py-8 text-center text-sm text-slate-500">Loading status data…</p> : items.length === 0 ? <div className="py-10 text-center"><ClipboardList size={28} className="mx-auto mb-2 text-slate-300" /><p className="text-sm font-semibold text-slate-700">No item data yet</p><p className="mt-1 text-xs text-slate-500">Status distribution will appear after items are registered.</p></div> : <div className="space-y-4">{statusCounts.filter((entry) => entry.count > 0).map((entry) => <div key={entry.status}><div className="mb-1.5 flex items-center justify-between gap-4 text-sm"><span className="flex min-w-0 items-center gap-2 text-slate-700"><span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: STATUS_COLORS[entry.status] }} /><span className="truncate">{STATUS_LABELS[entry.status]}</span></span><span className="shrink-0 font-semibold tabular-nums text-slate-900">{entry.count} <span className="font-normal text-slate-500">({Math.round(entry.count / statusTotal * 100)}%)</span></span></div><div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full transition-all" style={{ width: `${entry.count / statusTotal * 100}%`, backgroundColor: STATUS_COLORS[entry.status] }} /></div></div>)}</div>}
         </section>

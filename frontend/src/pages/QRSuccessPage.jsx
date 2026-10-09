@@ -45,13 +45,15 @@ export default function QRSuccessPage() {
   const trackingUrl = item.qrCodeUrl?.startsWith('http') ? item.qrCodeUrl : `${window.location.origin}/track/${encodeURIComponent(displayId)}`;
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[#F8FAFC] px-4 py-10 sm:px-6">
-      <div className="w-full max-w-2xl rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm sm:p-9">
+    <div className="flex min-h-dvh items-center justify-center bg-[#F8FAFC] px-3.5 py-6 sm:px-6 sm:py-10">
+      <div className="w-full max-w-2xl rounded-2xl border border-[#E2E8F0] bg-white p-4.5 sm:p-9 shadow-sm">
         <div className="text-center">
-          <span className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-[#166534]"><CheckCircle2 size={34} /></span>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#166534]">EcoTrack Registration</p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#0F172A] sm:text-3xl">Item registered successfully</h1>
-          <p className="mt-2 text-sm text-slate-500">Keep this QR code with the item to access its tracking record.</p>
+          <span className="mx-auto mb-3 sm:mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-emerald-100 text-[#166534]">
+            <CheckCircle2 size={30} className="sm:w-8 sm:h-8" />
+          </span>
+          <p className="text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] text-[#166534]">EcoTrack Registration</p>
+          <h1 className="mt-1.5 sm:mt-2 text-xl font-bold tracking-tight text-[#0F172A] sm:text-3xl">Item registered successfully</h1>
+          <p className="mt-1.5 text-xs sm:text-sm text-slate-500">Keep this QR code with the item to access its tracking record.</p>
         </div>
 
         <div className="mt-8 grid gap-6 rounded-xl border border-[#E2E8F0] bg-slate-50 p-4 sm:grid-cols-2 sm:p-6">

@@ -102,7 +102,7 @@ export default function StatusUpdatePage() {
       subtitle="Update the current status of the e-waste item."
     >
       <div className="max-w-xl">
-        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-6 sm:p-8">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-4 sm:p-8">
           {error && (
             <div className="mb-6 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />

@@ -116,7 +116,7 @@ export default function ScannerPage() {
       subtitle="Look up an item by tracking ID and record the next custody handoff."
     >
       <div className="mx-auto max-w-2xl space-y-5">
-        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm sm:p-6">
+        <section className="rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-6 shadow-sm">
           <div className="mb-4 flex items-center gap-2 text-[#166534]">
             <QrCode size={18} />
             <h2 className="text-sm font-bold uppercase tracking-wider">Scan / Enter Item ID</h2>
@@ -133,7 +133,7 @@ export default function ScannerPage() {
                 className="w-full rounded-xl border border-[#E2E8F0] bg-slate-50 py-2.5 pl-9 pr-3 font-mono text-sm uppercase focus:border-[#166534] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#166534]/20"
               />
             </div>
-            <button type="submit" disabled={loading || !manualInput.trim()} className="btn-primary text-sm">
+            <button type="submit" disabled={loading || !manualInput.trim()} className="btn-primary text-sm justify-center">
               {loading ? <RefreshCw size={15} className="animate-spin" /> : <Search size={15} />}
               {loading ? 'Looking up…' : 'Find Item'}
             </button>

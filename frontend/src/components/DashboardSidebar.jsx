@@ -107,8 +107,24 @@ export default function DashboardSidebar({ isMobileOpen, onCloseMobile }) {
       {/* Mobile Drawer */}
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={onCloseMobile} />
-          <div className="relative w-64 h-full z-10">{content}</div>
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity" 
+            onClick={onCloseMobile} 
+            aria-hidden="true"
+          />
+          <div className="relative w-72 max-w-[85vw] h-full z-10 shadow-2xl flex flex-col">
+            <div className="absolute top-3.5 right-3.5 z-20">
+              <button
+                type="button"
+                onClick={onCloseMobile}
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
+                aria-label="Close sidebar"
+              >
+                ✕
+              </button>
+            </div>
+            {content}
+          </div>
         </div>
       )}
     </>

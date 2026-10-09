@@ -57,7 +57,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
       {/* Brand Logo & Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center gap-2 mb-4">
@@ -73,7 +73,7 @@ export default function LoginPage() {
 
       {/* Card Form */}
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-sm rounded-2xl border border-[#E2E8F0] sm:px-10">
+        <div className="bg-white py-6 px-4 sm:py-8 sm:px-10 shadow-sm rounded-2xl border border-[#E2E8F0]">
           {error && (
             <div className="mb-5 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />
@@ -162,14 +162,14 @@ export default function LoginPage() {
             <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 text-center mb-3">
               Instant Demo Sign In (password: Password123!)
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {DEMO_ACCOUNTS.map((account) => (
                 <button
                   key={account.email}
                   type="button"
                   onClick={() => handleDemoLogin(account.email)}
                   disabled={loading}
-                  className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-[#166534] border border-[#E2E8F0] text-slate-700 transition-colors text-left disabled:opacity-60"
+                  className="px-3 py-2 text-xs font-medium rounded-lg bg-slate-50 hover:bg-emerald-50 hover:text-[#166534] border border-[#E2E8F0] text-slate-700 transition-colors text-left disabled:opacity-60 truncate"
                 >
                   {account.label}
                 </button>

@@ -23,36 +23,36 @@ export default function LandingPage() {
       <PublicNavbar />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-16 lg:pb-24">
+      <section className="relative overflow-hidden pt-8 pb-14 sm:pt-12 sm:pb-20 lg:pt-16 lg:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="text-left space-y-6">
+            <div className="text-left space-y-5 sm:space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[#166534] text-xs font-semibold uppercase tracking-wider">
                 <Leaf size={14} className="stroke-[2.5]" />
                 Scan. Track. Recycle.
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0F172A] tracking-tight leading-[1.15]">
-                Track E-Waste <br />
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-[#0F172A] tracking-tight leading-[1.18] sm:leading-[1.15]">
+                Track E-Waste <br className="hidden sm:inline" />
                 For a <span className="text-[#166534]">Cleaner Tomorrow</span>
               </h1>
 
-              <p className="text-lg text-[#64748B] max-w-xl leading-relaxed">
+              <p className="text-base sm:text-lg text-[#64748B] max-w-xl leading-relaxed">
                 A smart and transparent way to track electronic waste from collection to recycling using QR codes.
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
                 <Link
                   to="/signup"
-                  className="px-6 py-3 rounded-lg bg-[#166534] hover:bg-[#14532D] text-white font-medium text-base shadow-sm transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-lg bg-[#166534] hover:bg-[#14532D] text-white font-medium text-sm sm:text-base shadow-sm transition-all flex items-center justify-center gap-2"
                 >
                   Get Started
                   <ArrowRight size={18} />
                 </Link>
                 <Link
                   to="/track"
-                  className="px-6 py-3 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-medium text-base transition-all flex items-center gap-2"
+                  className="px-6 py-3 rounded-lg bg-white border border-[#E2E8F0] hover:bg-slate-50 text-[#0F172A] font-medium text-sm sm:text-base transition-all flex items-center justify-center gap-2"
                 >
                   <Search size={18} className="text-[#166534]" />
                   Track
@@ -80,44 +80,44 @@ export default function LandingPage() {
           </div>
 
           {/* Metrics Row (exact 4 metrics from mockup) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-10 border-t border-[#E2E8F0]">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center">
-                <Package size={24} />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-12 sm:mt-16 pt-8 sm:pt-10 border-t border-[#E2E8F0]">
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center shrink-0">
+                <Package size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <div className="text-lg font-bold text-[#0F172A] tracking-tight">Unique IDs</div>
-                <div className="text-xs text-[#64748B] font-medium">Per registered item</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center">
-                <Building2 size={24} />
-              </div>
-              <div>
-                <div className="text-lg font-bold text-[#0F172A] tracking-tight">QR Access</div>
-                <div className="text-xs text-[#64748B] font-medium">Quick public tracking</div>
+              <div className="min-w-0">
+                <div className="text-base sm:text-lg font-bold text-[#0F172A] tracking-tight truncate">Unique IDs</div>
+                <div className="text-[11px] sm:text-xs text-[#64748B] font-medium truncate">Per registered item</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center">
-                <Users2 size={24} />
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center shrink-0">
+                <Building2 size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <div className="text-lg font-bold text-[#0F172A] tracking-tight">Lifecycle</div>
-                <div className="text-xs text-[#64748B] font-medium">Recorded status history</div>
+              <div className="min-w-0">
+                <div className="text-base sm:text-lg font-bold text-[#0F172A] tracking-tight truncate">QR Access</div>
+                <div className="text-[11px] sm:text-xs text-[#64748B] font-medium truncate">Quick tracking</div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center">
-                <Recycle size={24} />
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center shrink-0">
+                <Users2 size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <div className="text-lg font-bold text-[#0F172A] tracking-tight">Two Paths</div>
-                <div className="text-xs text-[#64748B] font-medium">Refurbish or recycle</div>
+              <div className="min-w-0">
+                <div className="text-base sm:text-lg font-bold text-[#0F172A] tracking-tight truncate">Lifecycle</div>
+                <div className="text-[11px] sm:text-xs text-[#64748B] font-medium truncate">Recorded history</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-[#166534] flex items-center justify-center shrink-0">
+                <Recycle size={20} className="sm:w-6 sm:h-6" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-base sm:text-lg font-bold text-[#0F172A] tracking-tight truncate">Two Paths</div>
+                <div className="text-[11px] sm:text-xs text-[#64748B] font-medium truncate">Refurbish or recycle</div>
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-16 bg-white border-y border-[#E2E8F0]">
+      <section id="how-it-works" className="py-12 sm:py-16 bg-white border-y border-[#E2E8F0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-[#0F172A] tracking-tight">How EcoTrack Works</h2>
           <p className="text-sm text-[#64748B] mt-2 max-w-xl mx-auto">

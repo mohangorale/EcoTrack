@@ -98,8 +98,8 @@ export default function PublicTrackingDetails() {
         </div>
 
         {/* Product Overview Card matching mockup Screen 8 */}
-        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-6 mb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-4 sm:p-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 items-center">
             {/* Left Product Image */}
             <div className="w-full aspect-16/10 rounded-lg bg-slate-100 border border-[#E2E8F0] overflow-hidden flex items-center justify-center">
               {item.photoUrl ? (
@@ -146,10 +146,10 @@ export default function PublicTrackingDetails() {
         </div>
 
         {/* Full Chronological Checkpoints matching mockup Screen 8 */}
-        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-6 sm:p-8">
-          <div className="space-y-8 relative pl-6 before:absolute before:left-[11px] before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-4 sm:p-8">
+          <div className="space-y-7 relative pl-6 before:absolute before:left-[11px] before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
             {/* Step 1: Registered */}
-            <div className="relative flex items-start justify-between gap-4">
+            <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
               <div className="absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center ring-2 bg-white text-emerald-700 bg-emerald-100 ring-emerald-500">
                 <CheckCircle2 size={14} className="stroke-[2.5]" />
               </div>
@@ -157,13 +157,13 @@ export default function PublicTrackingDetails() {
                 <div className="text-sm font-bold text-slate-900">Registered</div>
                 <p className="text-xs text-slate-500 mt-0.5">Item registered by customer</p>
               </div>
-              <div className="text-xs font-medium text-slate-500 shrink-0">
+              <div className="text-[11px] sm:text-xs font-medium text-slate-400 sm:text-slate-500 pl-2 sm:pl-0 sm:shrink-0 sm:text-right">
                 12 Mar 2025, 10:30 AM
               </div>
             </div>
 
             {/* Step 2: Collected */}
-            <div className="relative flex items-start justify-between gap-4">
+            <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
               <div className="absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center ring-2 bg-white text-emerald-700 bg-emerald-100 ring-emerald-500">
                 <CheckCircle2 size={14} className="stroke-[2.5]" />
               </div>
@@ -171,13 +171,13 @@ export default function PublicTrackingDetails() {
                 <div className="text-sm font-bold text-slate-900">Collected</div>
                 <p className="text-xs text-slate-500 mt-0.5">Picked up from location</p>
               </div>
-              <div className="text-xs font-medium text-slate-500 shrink-0">
+              <div className="text-[11px] sm:text-xs font-medium text-slate-400 sm:text-slate-500 pl-2 sm:pl-0 sm:shrink-0 sm:text-right">
                 13 Mar 2025, 02:15 PM
               </div>
             </div>
 
             {/* Step 3: In Transit */}
-            <div className="relative flex items-start justify-between gap-4">
+            <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
               <div className="absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center ring-2 bg-white text-blue-700 bg-blue-100 ring-blue-500">
                 <Truck size={14} className="stroke-[2.5]" />
               </div>
@@ -185,13 +185,13 @@ export default function PublicTrackingDetails() {
                 <div className="text-sm font-bold text-slate-900">In Transit</div>
                 <p className="text-xs text-slate-500 mt-0.5">On the way to recycling facility</p>
               </div>
-              <div className="text-xs font-medium text-slate-500 shrink-0">
+              <div className="text-[11px] sm:text-xs font-medium text-slate-400 sm:text-slate-500 pl-2 sm:pl-0 sm:shrink-0 sm:text-right">
                 14 Mar 2025, 09:20 AM
               </div>
             </div>
 
             {/* Step 4: Under inspection */}
-            <div className="relative flex items-start justify-between gap-4 opacity-50">
+            <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4 opacity-50">
               <div className="absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center ring-2 bg-white text-slate-400 ring-slate-300">
                 <Activity size={14} />
               </div>
@@ -199,13 +199,13 @@ export default function PublicTrackingDetails() {
                 <div className="text-sm font-bold text-slate-700">Under Inspection</div>
                 <p className="text-xs text-slate-400 mt-0.5">Pending evaluation</p>
               </div>
-              <div className="text-xs font-medium text-slate-400 shrink-0">
+              <div className="text-[11px] sm:text-xs font-medium text-slate-400 pl-2 sm:pl-0 sm:shrink-0 sm:text-right">
                 Pending
               </div>
             </div>
 
             {/* Step 5: Recycled / Refurbished */}
-            <div className="relative flex items-start justify-between gap-4 opacity-50">
+            <div className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4 opacity-50">
               <div className="absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center ring-2 bg-white text-slate-400 ring-slate-300">
                 <Recycle size={14} />
               </div>
@@ -213,7 +213,7 @@ export default function PublicTrackingDetails() {
                 <div className="text-sm font-bold text-slate-700">Recycled / Refurbished</div>
                 <p className="text-xs text-slate-400 mt-0.5">Pending processing</p>
               </div>
-              <div className="text-xs font-medium text-slate-400 shrink-0">
+              <div className="text-[11px] sm:text-xs font-medium text-slate-400 pl-2 sm:pl-0 sm:shrink-0 sm:text-right">
                 Pending
               </div>
             </div>

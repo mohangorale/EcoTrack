@@ -50,7 +50,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
       {/* Brand Logo & Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center gap-2 mb-4">
@@ -66,7 +66,7 @@ export default function SignupPage() {
 
       {/* Card Form */}
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 shadow-sm rounded-2xl border border-[#E2E8F0] sm:px-10">
+        <div className="bg-white py-6 px-4 sm:py-8 sm:px-10 shadow-sm rounded-2xl border border-[#E2E8F0]">
           {error && (
             <div className="mb-5 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle size={15} className="shrink-0" />

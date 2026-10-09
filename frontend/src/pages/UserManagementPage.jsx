@@ -92,8 +92,8 @@ export default function UserManagementPage() {
     >
       <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs overflow-hidden">
         {/* Top Control Bar */}
-        <div className="p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="relative w-full sm:w-72">
+        <div className="p-3.5 sm:p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="relative flex-1 sm:max-w-xs">
             <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
@@ -106,15 +106,53 @@ export default function UserManagementPage() {
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="btn-primary text-xs font-semibold py-2 px-3.5 w-full sm:w-auto shrink-0"
+            className="btn-primary text-xs font-semibold py-2 px-3.5 w-full sm:w-auto shrink-0 justify-center"
           >
             <UserPlus size={14} />
             <span>Add User</span>
           </button>
         </div>
 
-        {/* User Table matching mockup Screen 13 */}
-        <div className="overflow-x-auto">
+        {/* Mobile View: Clean User Cards (< 640px) */}
+        <div className="block sm:hidden divide-y divide-[#E2E8F0]">
+          {loading ? (
+            <div className="p-6 text-center text-xs text-slate-400">Loading users directory...</div>
+          ) : filteredUsers.length === 0 ? (
+            <div className="p-6 text-center text-xs text-slate-400">No users match your query.</div>
+          ) : (
+            filteredUsers.map((u) => {
+              const isSuspended = u.accountStatus === 'SUSPENDED';
+              return (
+                <div key={`mob-u-${u.id}`} className="p-4 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-sm text-slate-900">{u.name}</span>
+                    <StatusBadge status={isSuspended ? 'DISABLED' : 'ACTIVE'} />
+                  </div>
+                  <p className="text-xs text-slate-600 truncate">{u.email}</p>
+                  <div className="flex items-center justify-between text-[11px] text-slate-500">
+                    <span className="capitalize font-medium text-slate-700">{u.role.toLowerCase().replace(/_/g, ' ')}</span>
+                    <span>{u.organizationName || '-'}</span>
+                  </div>
+                  {u.role !== 'ADMIN' && (
+                    <div className="pt-1 text-right">
+                      <button
+                        onClick={() => handleToggleStatus(u)}
+                        className={`text-xs font-semibold ${
+                          isSuspended ? 'text-[#166534]' : 'text-rose-600'
+                        }`}
+                      >
+                        {isSuspended ? 'Activate Account' : 'Suspend Account'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Desktop View: Full Table (>= 640px) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#F8FAFC] text-[11px] font-semibold uppercase tracking-wider text-slate-500 border-b border-[#E2E8F0]">
               <tr>

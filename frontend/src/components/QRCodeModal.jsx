@@ -42,12 +42,12 @@ export default function QRCodeModal({ item, onClose }) {
       aria-label="QR code asset tag"
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-xl sm:p-6"
+        className="w-full max-w-md max-h-[92vh] overflow-y-auto rounded-2xl border border-[#E2E8F0] bg-white p-4 sm:p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#166534]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-[#166534] shrink-0">
               <QrCode size={20} />
             </div>
             <div>
@@ -58,14 +58,14 @@ export default function QRCodeModal({ item, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E2E8F0] text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E2E8F0] text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800 shrink-0"
             aria-label="Close"
           >
             <X size={16} />
           </button>
         </div>
 
-        <div className="printable-sticker mb-5 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50 to-white p-6 text-center">
+        <div className="printable-sticker mb-5 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50 to-white p-4 sm:p-6 text-center">
           <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#166534]">
             EcoTrack Verified Asset Tag
           </p>

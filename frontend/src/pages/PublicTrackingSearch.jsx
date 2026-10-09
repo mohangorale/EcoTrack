@@ -119,12 +119,12 @@ export default function PublicTrackingSearch() {
         {item && (
           <div className="space-y-6">
             {/* Tracking Details Box */}
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-6">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-4 sm:p-6">
               <h3 className="text-sm font-bold text-[#0F172A] mb-4">Tracking Details</h3>
 
-              <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                 {/* Product Thumbnail */}
-                <div className="w-36 h-28 rounded-lg bg-slate-100 border border-[#E2E8F0] flex items-center justify-center overflow-hidden shrink-0">
+                <div className="w-24 h-24 sm:w-36 sm:h-28 rounded-lg bg-slate-100 border border-[#E2E8F0] flex items-center justify-center overflow-hidden shrink-0">
                   {item.photoUrl ? (
                     <img
                       src={item.photoUrl}
@@ -132,12 +132,12 @@ export default function PublicTrackingSearch() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <Laptop size={44} className="text-slate-400" />
+                    <Laptop size={36} className="text-slate-400" />
                   )}
                 </div>
 
                 {/* Metadata Fields */}
-                <div className="flex-1 space-y-2 text-xs">
+                <div className="flex-1 space-y-2 text-xs w-full">
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-slate-500 font-medium">Item ID:</span>
                     <span className="col-span-2 font-mono font-bold text-slate-900">{item.itemId}</span>
@@ -159,10 +159,10 @@ export default function PublicTrackingSearch() {
                 </div>
 
                 {/* View Full Timeline Button */}
-                <div className="shrink-0">
+                <div className="w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
                   <button
                     onClick={() => navigate(`/track/${item.itemId}`)}
-                    className="btn-primary text-xs font-semibold py-2 px-4"
+                    className="btn-primary text-xs font-semibold py-2 px-4 w-full sm:w-auto justify-center"
                   >
                     <span>Full Passport</span>
                     <ArrowRight size={14} />
@@ -172,7 +172,7 @@ export default function PublicTrackingSearch() {
             </div>
 
             {/* Tracking History Timeline Box */}
-            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-6">
+            <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-xs p-4 sm:p-6">
               <h3 className="text-sm font-bold text-[#0F172A] mb-6">Tracking History</h3>
               <TrackingTimeline history={history} currentStatus={item.currentStatus} />
             </div>

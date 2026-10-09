@@ -129,10 +129,10 @@ export default function CustomerTrackPage() {
     >
       <div className="space-y-6 max-w-6xl">
         {/* Search Bar & Quick Selector Card */}
-        <section className="bg-white rounded-2xl border border-[#E2E8F0] p-6 shadow-xs">
+        <section className="bg-white rounded-2xl border border-[#E2E8F0] p-4 sm:p-6 shadow-xs">
           <div className="max-w-3xl">
-            <h2 className="text-lg font-bold text-[#0F172A]">Trace Item by ID</h2>
-            <p className="text-xs text-slate-500 mt-1">
+            <h2 className="text-base sm:text-lg font-bold text-[#0F172A]">Trace Item by ID</h2>
+            <p className="text-xs text-slate-500 mt-0.5 sm:mt-1">
               Enter any EcoTrack serial identifier or click one of your registered devices below.
             </p>
 
@@ -152,7 +152,7 @@ export default function CustomerTrackPage() {
               <button
                 type="submit"
                 disabled={loading || !searchId.trim()}
-                className="btn-primary text-sm px-6 py-2.5 rounded-xl shrink-0"
+                className="btn-primary text-sm px-6 py-2.5 rounded-xl shrink-0 justify-center"
               >
                 {loading ? (
                   <>
@@ -171,16 +171,16 @@ export default function CustomerTrackPage() {
 
           {/* Quick Select from User's Registered Items */}
           {myItems.length > 0 && (
-            <div className="mt-6 pt-5 border-t border-[#E2E8F0]">
-              <div className="flex items-center justify-between mb-3">
+            <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-[#E2E8F0]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2.5">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                   <Package size={14} className="text-[#166534]" />
                   Your Registered Devices ({myItems.length})
                 </span>
-                <span className="text-xs text-slate-400">Click any device to track instantly</span>
+                <span className="text-[11px] text-slate-400">Tap any device to track instantly</span>
               </div>
 
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
                 {myItems.map((item, idx) => {
                   const isSelected = activeItem?.itemId === item.itemId;
                   return (
@@ -188,13 +188,13 @@ export default function CustomerTrackPage() {
                       key={`${item.itemId || item.id || 'item'}-${idx}`}
                       type="button"
                       onClick={() => handleSelectMyItem(item)}
-                      className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-left border text-xs transition-all shrink-0 ${
+                      className={`flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-left border text-xs transition-all shrink-0 ${
                         isSelected
                           ? 'border-[#166534] bg-emerald-50/70 text-[#166534] ring-1 ring-[#166534]'
                           : 'border-[#E2E8F0] bg-white hover:border-emerald-300 hover:bg-slate-50 text-slate-800'
                       }`}
                     >
-                      <span className="font-semibold">{item.deviceName}</span>
+                      <span className="font-semibold truncate max-w-[120px]">{item.deviceName}</span>
                       <span className="font-mono text-[11px] text-slate-500">({item.itemId})</span>
                       <StatusBadge status={item.currentStatus} />
                     </button>
@@ -207,7 +207,7 @@ export default function CustomerTrackPage() {
 
         {/* Error Alert */}
         {error && (
-          <div role="alert" className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-3">
+          <div role="alert" className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm flex items-center gap-3">
             <AlertCircle size={18} className="shrink-0 text-rose-600" />
             <div className="flex-1">{error}</div>
           </div>
@@ -217,11 +217,11 @@ export default function CustomerTrackPage() {
         {activeItem ? (
           <div className="space-y-6">
             {/* Main Item Summary Card */}
-            <section className="bg-white rounded-2xl border border-[#E2E8F0] p-6 shadow-xs">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <section className="bg-white rounded-2xl border border-[#E2E8F0] p-4 sm:p-6 shadow-xs">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 sm:gap-6">
                 {/* Left: Device Info and Image */}
-                <div className="flex items-start gap-4">
-                  <div className="w-20 h-20 rounded-xl bg-slate-100 border border-[#E2E8F0] flex items-center justify-center overflow-hidden shrink-0">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-slate-100 border border-[#E2E8F0] flex items-center justify-center overflow-hidden shrink-0">
                     {activeItem.photoUrl ? (
                       <img
                         src={activeItem.photoUrl}
@@ -233,7 +233,7 @@ export default function CustomerTrackPage() {
                     )}
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 flex items-center gap-1">
                         {activeItem.itemId}
@@ -249,7 +249,7 @@ export default function CustomerTrackPage() {
                       <StatusBadge status={activeItem.currentStatus} />
                     </div>
 
-                    <h1 className="text-xl font-bold text-[#0F172A] mt-1.5">{activeItem.deviceName}</h1>
+                    <h1 className="text-lg sm:text-xl font-bold text-[#0F172A] mt-1.5 break-words">{activeItem.deviceName}</h1>
                     <p className="text-xs text-slate-500 mt-0.5">
                       Category: <span className="font-semibold text-slate-700">{String(activeItem.category || 'Other').replace(/_/g, ' ')}</span>
                     </p>
@@ -257,11 +257,11 @@ export default function CustomerTrackPage() {
                 </div>
 
                 {/* Right: Quick Action Buttons */}
-                <div className="flex flex-wrap items-center gap-2.5 pt-2 lg:pt-0">
+                <div className="flex items-center gap-2 w-full lg:w-auto pt-2 lg:pt-0">
                   <button
                     type="button"
                     onClick={() => setSelectedQRItem(activeItem)}
-                    className="btn-outline text-xs py-2 px-3.5"
+                    className="btn-outline text-xs py-2 px-3 flex-1 sm:flex-initial justify-center"
                   >
                     <QrCode size={15} className="text-[#166534]" />
                     <span>View QR Code</span>
@@ -271,7 +271,7 @@ export default function CustomerTrackPage() {
                     href={`/track/${encodeURIComponent(activeItem.itemId)}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="btn-outline text-xs py-2 px-3.5 no-underline flex items-center gap-1.5"
+                    className="btn-outline text-xs py-2 px-3 flex-1 sm:flex-initial justify-center no-underline flex items-center gap-1.5"
                   >
                     <span>Public Passport</span>
                     <ExternalLink size={14} />
@@ -280,7 +280,7 @@ export default function CustomerTrackPage() {
               </div>
 
               {/* Metadata Highlights Bar */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-[#E2E8F0]">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-5 sm:mt-6 pt-5 sm:pt-6 border-t border-[#E2E8F0]">
                 <div>
                   <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Registered Date</span>
                   <span className="text-xs font-semibold text-slate-800 mt-1 flex items-center gap-1.5">
@@ -316,8 +316,8 @@ export default function CustomerTrackPage() {
             </section>
 
             {/* Tracking History / Checkpoint Timeline */}
-            <section className="bg-white rounded-2xl border border-[#E2E8F0] p-6 shadow-xs">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#E2E8F0]">
+            <section className="bg-white rounded-2xl border border-[#E2E8F0] p-4 sm:p-6 shadow-xs">
+              <div className="flex items-center justify-between mb-5 pb-3.5 border-b border-[#E2E8F0]">
                 <div>
                   <h3 className="text-base font-bold text-[#0F172A]">Chain of Custody Timeline</h3>
                   <p className="text-xs text-slate-500 mt-0.5">
@@ -327,7 +327,7 @@ export default function CustomerTrackPage() {
                 <button
                   type="button"
                   onClick={() => fetchTracking(activeItem.itemId)}
-                  className="btn-outline text-xs py-1.5 px-3"
+                  className="btn-outline text-xs py-1.5 px-3 shrink-0"
                   disabled={loading}
                 >
                   <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
